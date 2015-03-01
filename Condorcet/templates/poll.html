@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>{{ data.question }}</title>
+</head>
+
+<body>
+<h1>{{ data.question }}</h1>
+
+<!-- <form action="/poll"> -->
+<!-- {% for e in data.fields %} -->
+<!-- <input type="radio" name="field" value="{{ e }}"> {{ e }}<br> -->
+<!-- {% endfor %} -->
+<!-- <input type="submit" value="Vote" /> -->
+<!-- </form> -->
+
+
+<form action="/poll">
+<table>
+  <tr>
+    <td> </td>
+    {% for e in data.fields %}
+    <td> {{ e }} </td>
+    {% endfor %}
+  </tr>
+  {% for num in data.num_choices %}
+  <tr>
+    <td>Choice number {{num}}: </td>
+    {% for e in data.fields %}
+    <td><input type="radio" name="{{num}}" value="{{ e }}"> </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+<input type="submit" value="Vote" />
+</form>
+
+{{data.retry_str}}
+
+<hr>
+<address></address>
+<!-- hhmts start -->Last modified: Sun Mar  1 22:18:31 CET 2015 <!-- hhmts end -->
+</body> </html>
