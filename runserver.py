@@ -1,2 +1,2 @@
-from Condorcet import app
-app.run(debug=True)
+from Condorcet import create_app
+create_app().run() #(debug=True)
