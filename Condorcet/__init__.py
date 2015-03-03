@@ -39,6 +39,7 @@ def create_app():
         # 'HTTP_SHIB_AUTHENTICATION_METHOD': (False, 'authmethod'),
         }
     app.config.setdefault('SSO_ATTRIBUTE_MAP', SSO_ATTRIBUTE_MAP)
+    app.config.setdefault('SSO_LOGIN_URL', '/login')
         
     # This attaches the *flask_sso* login handler to the SSO_LOGIN_URL,
     # which essentially maps the SSO attributes to a dictionary and
@@ -55,9 +56,11 @@ def create_app():
     def root():
         if 'user' in session:
             poll_data['Greetings'] = "Welcome {name}".format(name=session['user']['fullname'])
-        else: poll_data['Greetings'] = 'Pacco'
-        # return session['user']['ADFS_FULLNAME']
-        return render_template('poll.html', data=poll_data)
+            return render_template('poll.html', data=poll_data)
+        else:
+            poll_data['Greetings'] = 'Pacco'
+            return render_template('first.html')#'Sorry you did not succesfully log in' 
+        
 
     @app.route('/poll')
     def result():

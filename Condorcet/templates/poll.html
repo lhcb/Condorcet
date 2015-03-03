@@ -6,17 +6,13 @@
 <body>
 <h1>{{ data.question }}</h1>
 
-<!-- <form action="/poll"> -->
-<!-- {% for e in data.fields %} -->
-<!-- <input type="radio" name="field" value="{{ e }}"> {{ e }}<br> -->
-<!-- {% endfor %} -->
-<!-- <input type="submit" value="Vote" /> -->
-<!-- </form> -->
 
 {{data.Greetings}}
 
 <form action="/poll">
 <table>
+  <col width="130">
+  <!-- <col width="80"> -->
   <tr>
     <td> </td>
     {% for e in data.fields %}
@@ -39,5 +35,5 @@
 
 <hr>
 <address></address>
-<!-- hhmts start -->Last modified: Tue Mar  3 00:36:29 CET 2015 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Tue Mar  3 12:33:17 CET 2015 <!-- hhmts end -->
 </body> </html>
