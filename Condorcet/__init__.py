@@ -75,9 +75,11 @@ def root():
 def result():
     if 'user' in session:
         order = []
-        for num in [str(i) for i in range(1,len(choices)+1)]:
-            order.append(request.args.get(num))
-        vote = getStrOrder(order)
+        if len(request.args) == len(choices):
+            for num in [str(i) for i in range(1,len(choices)+1)]:
+                order.append(request.args.get(num))
+            vote = getStrOrder(order)
+        else: vote = '' # so that fails next if
         if len(set(vote)) == len(choices):
             username = session['user']['username']
             if manageDB.isInDB(username):
