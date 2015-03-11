@@ -39,11 +39,11 @@ def getLoosers(preferences, candidates):
             num_preferences[cand][i] += 1
     # print num_preferences
 
-    preferences_loosers = {key: value for key, value in num_preferences.items() if num_preferences[key][-1] == max([list_pref[-1] for list_pref in num_preferences.values()])}
+    preferences_loosers = dict((key, value) for key, value in num_preferences.items() if num_preferences[key][-1] == max([list_pref[-1] for list_pref in num_preferences.values()]))
     # print preferences_loosers
     for i in range(num_candidates-1):
         if len(preferences_loosers) == 1: break
-        preferences_loosers = {key: value for key, value in preferences_loosers.items() if preferences_loosers[key][i] == min([list_pref[i] for list_pref in preferences_loosers.values()])}
+        preferences_loosers = dict((key, value) for key, value in preferences_loosers.items() if preferences_loosers[key][i] == min([list_pref[i] for list_pref in preferences_loosers.values()]))
         # print preferences_loosers
     return preferences_loosers.keys()
          

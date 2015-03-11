@@ -36,10 +36,20 @@ def modifyVote(username, new_vote):
 def deleteVote(username):
     Votes.query.filter_by(username=username).delete()
     db.session.commit()
-    
 
+def getVote(username):
+    return Votes.query.filter_by(username=username).first().vote
+    
 def readDB():
     print Votes.query.all()
+
+def getVotes():
+    '''List of (username, vote)'''
+    return [(i.username, i.vote) for i in Votes.query.all()]
+
+def getPreferences():
+    '''List of votes'''
+    return [i.vote for i in Votes.query.all()]
 
 def isInDB(username):
     return bool(Votes.query.filter_by(username=username).all())
