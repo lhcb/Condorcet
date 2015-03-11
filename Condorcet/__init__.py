@@ -72,7 +72,7 @@ def root():
 
 
 @app.route('/poll')
-def result():
+def savePoll():
     if 'user' in session:
         order = []
         if len(request.args) == len(choices):
@@ -83,20 +83,29 @@ def result():
         if len(set(vote)) == len(choices):
             username = session['user']['username']
             if manageDB.isInDB(username):
-                manageDB.modifyVote(username, vote)
+                secret_key = manageDB.modifyVote(username, vote)
             else:
-                manageDB.addVote(username, vote)
-            # Prepare page with results
-            preferences = manageDB.getPreferences()
-            winners = getListChoice(elections.getWinner(preferences, [i for cont,i in enumerate(alphabet) if cont< len(choices)]))
-            result_data = dict(numCandidates=len(choices))
-            result_data['winner_str'] = ('The winner is' if len(winners)==1 else 'The winners are')+' '+', '.join(winners)
-            result_data['table_DB'] = [[i[0]]+getListChoice(i[1]) for i in manageDB.getVotes()]
-            #return "{0} {1}".format(result_data['winner_str'],result_data['table_DB'])
-            return render_template('results.html', data=result_data)
+                secret_key = manageDB.addVote(username, vote)
+            congrats_data = dict(secret_key=secret_key)
+            return render_template('congrats.html', data=congrats_data)
         else:
             poll_data['retry_str'] = 'You must rank all candidates and two element cannot share the same position, try again'
         return redirect('/')
+    else: 
+        return redirect('/')
+
+@app.route('/results')
+def result():
+    if 'user' in session:
+        order = []
+        # Prepare page with results
+        preferences = manageDB.getPreferences()
+        winners = getListChoice(elections.getWinner(preferences, [i for cont,i in enumerate(alphabet) if cont< len(choices)]))
+        result_data = dict(numCandidates=len(choices))
+        result_data['winner_str'] = ('The winner is' if len(winners)==1 else 'The winners are')+' '+', '.join(winners)
+        result_data['table_DB'] = [[i[0],i[1]]+getListChoice(i[2]) for i in manageDB.getVotes()]
+        #return "{0} {1}".format(result_data['winner_str'],result_data['table_DB'])
+        return render_template('results.html', data=result_data)
     else: # In theory this case should never happen
         return redirect('/')
 
