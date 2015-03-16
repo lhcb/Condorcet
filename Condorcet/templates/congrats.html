@@ -1,17 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html> <head>
-<title>Congratulation, your vote was successfully saved</title>
-</head>
+{% extends "layout.html" %}
+{% block body %}
+    <h1>Congratulation, your vote was successfully saved</h1>
 
-<body>
-<h1>Congratulation, your vote was successfully saved</h1>
+    <p>The secret code that you will be able to use to check that your vote was
+        correctly taken into account is <span class="secret-key">{{data.secret_key}}</span></p>
 
-<p>The secret code that you will be able to use to check that your vote was
-correctly taken into account is {{data.secret_key}}</p>
-
-<p>To see the results click <a href='results'>here</a></p>
-
-<hr>
-<address></address>
-<!-- hhmts start -->Last modified: Wed Mar 11 23:27:47 CET 2015 <!-- hhmts end -->
-</body> </html>
+    <p>To see the results click <a href='results'>here</a></p>
+{% endblock %}

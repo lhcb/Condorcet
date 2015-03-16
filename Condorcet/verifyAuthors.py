@@ -1,7 +1,7 @@
 import xml.etree.ElementTree
 
 # file found here: www.physik.uzh.ch/~strauman/forMemCo/
-authors_file = '/home/deploy/Condorcet/Condorcet/LHCb_HD_authorlist_2014-03-19.xml'
+authors_file = '/afs/cern.ch/user/g/gdujany/www/Condorcet/Condorcet/LHCb_HD_authorlist_2014-03-19.xml'
 
 def isAuthor(fullname, authors_file=authors_file):
 
@@ -15,7 +15,3 @@ def isAuthor(fullname, authors_file=authors_file):
     authors = [' '.join([child[0].text, child[1].text]) for child in root[4]]
 
     return fullname in authors
-
-    
-
-

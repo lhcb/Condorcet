@@ -1,9 +1,14 @@
+if __name__ == '__main__':
+    import sys
+    sys.path.append('..')
+
+
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
 import random, string
 
-app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///votes.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///databases/votes.db'
 db = SQLAlchemy(app)
 
 
@@ -20,7 +25,7 @@ class Votes(db.Model):
     def __repr__(self):
         return '<User {username}, secret_key {secret_key}, vote {vote}>'.format(**self.__dict__)
 
-    
+
 def initDB():
     db.create_all()
 
@@ -61,7 +66,3 @@ def getPreferences():
 
 def isInDB(username):
     return bool(Votes.query.filter_by(username=username).all())
-
-# preferences = [i.vote for i in Votes.query.all()]
-
-

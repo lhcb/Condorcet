@@ -1,0 +1,13 @@
+AddHandler fastcgi-script .fcgi
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ cgi-bin/homepage.fcgi/$1 [QSA,L]
+
+SSLRequireSSL
+AuthType shibboleth
+ShibRequireSession On
+ShibRequireAll On
+ShibExportAssertion Off
+
+Require valid-user
+Require ADFS_GROUP "z5"

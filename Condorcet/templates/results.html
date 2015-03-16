@@ -1,33 +1,29 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html> <head>
-<title>Voting results</title>
-</head>
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Voting results</h1>
 
-<body>
-<h1>Voting results</h1>
+  <p>{{data.winner_str}}</p>
 
-<p>{{data.winner_str}}</p>
-
-<table>
-  <!-- <col width="130"> -->
-   <tr>
-    <td> username </td>
-    <td> secret key </td>
-    {% for e in range(1,data.numCandidates+1) %}
-    <td> choice number {{ e }} </td>
+  <table>
+    <!-- <col width="130"> -->
+     <tr>
+      <td> username </td>
+      <td> secret key </td>
+      {% for e in range(1,data.numCandidates+1) %}
+      <td> choice number {{ e }} </td>
+      {% endfor %}
+    </tr>
+    {% for row in data.table_DB %}
+    <tr>
+      {% for e in row %}
+      <td> {{ e }} </td>
+      {% endfor %}
+    </tr>
     {% endfor %}
-  </tr>
-  {% for row in data.table_DB %}
-  <tr>
-    {% for e in row %}
-    <td> {{ e }} </td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
+  </table>
 
 
-<hr>
-<address></address>
-<!-- hhmts start -->Last modified: Wed Mar 11 23:11:02 CET 2015 <!-- hhmts end -->
-</body> </html>
+  <hr>
+  <address></address>
+  <!-- hhmts start -->Last modified: Wed Mar 11 23:11:02 CET 2015 <!-- hhmts end -->
+{% endblock %}
