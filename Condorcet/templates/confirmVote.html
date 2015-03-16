@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Your preference is: {{data.preference}}. To confirm click on the confirm
+button otherwise <a href='/'>go back</a></h2>
+  
+
+  <form action={{ data.saveVote_address }}>
+  <input type="submit" value="Confirm" />
+  </form>
+{% endblock %}

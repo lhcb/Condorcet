@@ -1,7 +1,8 @@
 import xml.etree.ElementTree
 
 # file found here: www.physik.uzh.ch/~strauman/forMemCo/
-authors_file = '/afs/cern.ch/user/g/gdujany/www/Condorcet/Condorcet/LHCb_HD_authorlist_2014-03-19.xml'
+import os, sys, random, string
+authors_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),'LHCb_HD_authorlist_2014-03-19.xml')
 
 def isAuthor(fullname, authors_file=authors_file):
 

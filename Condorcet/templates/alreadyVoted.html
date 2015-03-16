@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>{{session.user.fullname}}, it would seems that you have already voted.</h1>
+
+    <p>To see the results click <a href='results'>here</a></p>
+{% endblock %}
