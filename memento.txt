@@ -1,16 +1,23 @@
-To setup the environment the first time:
+To setup the environment the first time on an afs folder:
 
 export PATH=/usr/bin/python:$PATH
 virtualenv venv
 . venv/bin/activate
 pip install Flask
 pip istall flask-sqlalchemy
+pip install argparse
 wget https://pypi.python.org/packages/2.6/f/flup/flup-1.0.2-py2.6.egg
 
 Go to https://webservices.web.cern.ch/webservices/Tools/SiteConfiguration/ and enable  CGI execution
+
+To make the database:
+chmod 755 Condorcet/manageBD.py
+Condorcet/manageBD.py --init
 
 To make the database writable by the webserver one has to do:
 
 fs setacl -dir Condorcet/databases -acl webserver:afs diklwr
 chmod 0666 Condorcet/databases
 chmod 0666 Condorcet/databases/*.db
+
+To test things locally making the database as explained above should be enough.
