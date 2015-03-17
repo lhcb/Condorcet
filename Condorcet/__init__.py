@@ -100,9 +100,8 @@ def savePoll():
     username = session['user']['username']
     if manageDB.isInDB(username): return render_template('alreadyVoted.html')
     secret_key = manageDB.addVote(username, session['vote'])
-    congrats_data = dict(secret_key=secret_key)
-    return render_template('congrats.html', data=congrats_data)
-   
+    return render_template('congrats.html', secret_key=secret_key)
+
 
 @app.route(build_path('/results'))
 def result():
