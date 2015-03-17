@@ -8,3 +8,6 @@
 {%- macro list_as_fragment(list) -%}
 {% for el in list[:-1] %}{{ el }}, {% endfor %} and {{ list[-1] }}
 {%- endmacro -%}
+
+{# Return the URL for contacting the email address defined in config.CONTACT. #}
+{% macro contact_url() %}mailto:{{ config.CONTACT }}{% endmacro %}

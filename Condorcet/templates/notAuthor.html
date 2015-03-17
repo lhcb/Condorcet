@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
+{% from "_helpers.html" import contact_url %}
 {% block body %}
-    <h1>'It would seems that you are not an LHCb author hence you are not eligible to vote for the Physics coordinator, in case you think this is a mistake send an email to ...'</h1>
-
-    
+    <h2>Not eligible to vote</h2>
+    <p>The LHCb constitution only allows LHCb collaborators who are on the author list to vote in the Physics Coordinator elections, and so you are unable to vote.</p>
+    <p>If you think this is incorrect, please <a href="{{ contact_url() }}">contact the membership committee</a>.</p>
 {% endblock %}
