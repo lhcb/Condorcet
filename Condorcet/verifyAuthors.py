@@ -16,3 +16,16 @@ def isAuthor(fullname, authors_file=authors_file):
     authors = [' '.join([child[0].text, child[1].text]) for child in root[4]]
 
     return fullname in authors
+
+def listAuthors(authors_file=authors_file):
+
+    tree = xml.etree.ElementTree.parse(authors_file)
+    root = tree.getroot()
+
+    """
+    authors are in root[4], the given name is root[4][i][0].text and surname root[4][i][1].text
+    """
+
+    authors = [' '.join([child[0].text, child[1].text]) for child in root[4]]
+
+    return authors

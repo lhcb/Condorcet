@@ -13,6 +13,7 @@ import sys
 import random
 import string
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
 
 
 app = Flask(__name__)
@@ -45,7 +46,7 @@ def set_user():
     if app.config['DEBUG']:
         session['user'] = {
             'username': 'gdujany',
-            'fullname': 'Giulio Dujany'
+            'fullname': 'Giulio Dujan'
         }
     else:
         session['user'] = {
@@ -73,16 +74,17 @@ def build_path(path=''):
 @app.route(build_path())
 @author_required
 def root():
-    username = session['user']['username']
-    if manageDB.isInDB(username):
+    fullname = session['user']['fullname']
+    if manageDB.isInDB(fullname):
         return render_template('alreadyVoted.html')
-    choices_copy = app.config['OPTIONS'][:]
-    # FIXME: like this it shuffle fine but when I reload the page the votes
-    # already set change!
-    random.shuffle(choices_copy)
+    try: session['candidates']
+    except KeyError:
+        choices_copy = app.config['OPTIONS'][:]
+        random.shuffle(choices_copy)
+        session['candidates'] = choices_copy
     return render_template('poll.html',
                            title=app.config['TITLE'],
-                           fields=choices_copy)
+                           fields=session['candidates'])
 
 
 @app.route(build_path('/poll'), methods=['POST'])
@@ -98,8 +100,8 @@ def confirmVote():
         # So that fails next if
         vote = ''
     if len(set(vote)) == len(choices):
-        username = session['user']['username']
-        if manageDB.isInDB(username):
+        fullname = session['user']['fullname']
+        if manageDB.isInDB(fullname):
             return render_template('alreadyVoted.html')
         session['vote'] = vote
         return render_template('confirmVote.html', choices=getListChoice(vote))
@@ -114,10 +116,10 @@ def confirmVote():
 @app.route(build_path('/saveVote'))
 @author_required
 def savePoll():
-    username = session['user']['username']
-    if manageDB.isInDB(username):
+    fullname = session['user']['fullname']
+    if manageDB.isInDB(fullname):
         return render_template('alreadyVoted.html')
-    secret_key = manageDB.addVote(username, session['vote'])
+    secret_key = manageDB.addVote(fullname, session['vote'])
     return render_template('congrats.html', secret_key=secret_key)
 
 

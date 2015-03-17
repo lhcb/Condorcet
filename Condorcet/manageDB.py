@@ -22,9 +22,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
 from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
 
-
 db = SQLAlchemy(app)
-
 
 class Votes(db.Model):
     secret_key = db.Column(db.String(8), unique=True, primary_key=True)
@@ -39,37 +37,52 @@ class Votes(db.Model):
 
 class Voters(db.Model):
     __bind_key__ = 'voters'
-    username = db.Column(db.String(20), unique=True, primary_key=True)
+    fullname = db.Column(db.String(20), unique=True, primary_key=True)
+    hasVoted = db.Column(db.Boolean)
     
-    def __init__(self, username):
-        self.username = username
+    def __init__(self, fullname):
+        self.fullname = fullname
+        self.hasVoted = False # at initialization is set to False
         
     def __repr__(self):
-        return '<User {username}>'.format(**self.__dict__)
+        return '<User: {fullname}, has voted: {hasVoted}>'.format(**self.__dict__)
+
+    def __str__(self):
+        return '<{fullname}>'.format(**self.__dict__)
+
+from verifyAuthors import listAuthors
 
     
 def initDB():
+    if 'voters.db' in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases')) or 'votes.db' in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases')):
+        raise IOError('Database already there, use --reset option if you want to substitute it')
     db.create_all()
+    for fullname in listAuthors():
+        newVoter = Voters(fullname)
+        db.session.add(newVoter)
+    db.session.commit()
 
-def isInDB(username):
-    return bool(Voters.query.filter_by(username=username).all())
+def isInDB(fullname):
+    try:
+        return Voters.query.filter_by(fullname=fullname).first().hasVoted
+    except AttributeError:
+        raise KeyError(fullname+' not in the list of possible voters')
 
-def addVote(username, vote):   
-    if isInDB(username):
-        raise KeyError(username+' already in database')
+def addVote(fullname, vote):   
+    if isInDB(fullname):
+        raise KeyError(fullname+' has already voted')
     else:
         while True:
             secret_key = ''.join(random.sample(string.lowercase+string.digits,8))
             if not bool(Votes.query.filter_by(secret_key=secret_key).all()): break
-        newVoter = Voters(username)
         newPreference = Votes(secret_key, vote)
-        db.session.add(newVoter)
+        Voters.query.filter_by(fullname=fullname).first().hasVoted = True
         db.session.add(newPreference)
         db.session.commit()
         return secret_key
 
 def readDB():
-    print 'Voters: '+ str(Voters.query.all())
+    print 'Voters: '+ str([str(voter) for voter in Voters.query.all() if voter.hasVoted])
     print 'Votes:  '+ str(Votes.query.all())
 
 def getVotes():
