@@ -2,8 +2,8 @@
 {% block body %}
     <h1>Vote successfully cast</h1>
 
-    <p>Your secret key is <span class="secret-key">{{ secret_key }}</span></p>
-    <p>You should <span class="important">keep a record of the secret key</span> above, as you can use it to check that your vote was correctly counted once the results have been announced.</p>
+    <p>Your vote has been saved successfully and your secret key is <span class="secret-key standout">{{ secret_key }}</span></p>
+    <p>You should <span class="important">keep a record of the secret key</span> above, as you can use it to check that your vote was correctly counted once the results have been announced. Once you navigate away from this page it cannot be retrieved.</p>
 
-    <p>To see the results click <a href='results'>here</a></p>
+    <p>To see the results click <a href='results'>here</a>.</p>
 {% endblock %}
