@@ -46,7 +46,7 @@ def set_user():
     if app.config['DEBUG']:
         session['user'] = {
             'username': 'gdujany',
-            'fullname': 'Giulio Dujan'
+            'fullname': 'Giulio Dujany'
         }
     else:
         session['user'] = {
