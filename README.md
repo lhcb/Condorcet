@@ -15,8 +15,8 @@ $ cd Condorcet
 $ virtualenv venv
 $ . venv/bin/activate
 $ pip install -r requirements.txt
-$ chmod 755 Condorcet/manageBD.py
-$ Condorcet/manageBD.py --init
+$ chmod 755 Condorcet/managDB.py
+$ Condorcet/manageDB.py --init
 ```
 
 AFS
