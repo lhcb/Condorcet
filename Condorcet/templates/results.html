@@ -22,7 +22,7 @@
     <tr>
       <td><span class="secret-key">{{ row[0] }}</span></td>
       {% for el in row[1:] %}
-      <td>{{ el }}</td>
+      <td>{{ '<br/>'.join(el.split(' ')) | safe }}</td>
       {% endfor %}
     </tr>
     {% endfor %}

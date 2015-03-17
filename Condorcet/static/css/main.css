@@ -51,6 +51,7 @@ table {
   margin: 2em 0;
   border-spacing: 0px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 tr {
@@ -59,10 +60,6 @@ tr {
 
 tr:nth-of-type(2n + 1) td {
   background-color: #f9f9f9;
-}
-
-table tr td:first-child {
-  width: 20%;
 }
 
 td, th {

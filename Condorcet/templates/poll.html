@@ -11,7 +11,7 @@
       <tr>
         <th></th>
         {% for f in fields %}
-        <th>{{ f }}</th>
+        <th>{{ '<br/>'.join(f.split(' ')) | safe }}</th>
         {% endfor %}
       </tr>
     </thead>
