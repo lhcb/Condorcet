@@ -1,0 +1,10 @@
+{#
+   Return the list elements concatenated with a comma and a space, and prepend
+   'and' to the list element, e.g.
+
+   >>> list_as_fragment(['A', 'B', 'C'])
+   'A, B, and C'
+#}
+{%- macro list_as_fragment(list) -%}
+{% for el in list[:-1] %}{{ el }}, {% endfor %} and {{ list[-1] }}
+{%- endmacro -%}

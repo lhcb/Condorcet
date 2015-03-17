@@ -1,10 +1,15 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h2>Your preference is: {{data.preference}}. To confirm click on the confirm
-button otherwise <a href='/'>go back</a></h2>
-  
+  <h2>Confirm your vote</h2>
+  <p>Please confirm that the ordered list below correctly represents your choices. If this ordering is incorrect <a href="{{ url_for('root') }}">go back to order again</a>.
+  <ol>
+    {% for choice in choices %}
+    <li>{{ choice }}</li>
+    {% endfor %}
+  </ol>
+  <p>If this ordering is correct, click ‘Confirm’ below to submit your vote. This action is final and your <span class="important">vote cannot be changed</span> after confirmation.</p>
 
-  <form action={{ data.saveVote_address }}>
-  <input type="submit" value="Confirm" />
+  <form action={{ url_for('savePoll') }}>
+      <input type="submit" value="Confirm" />
   </form>
 {% endblock %}

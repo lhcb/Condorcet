@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h1>Congratulation, your vote was successfully saved</h1>
+    <h1>Vote successfully cast</h1>
 
-    <p>The secret code that you will be able to use to check that your vote was
-        correctly taken into account is <span class="secret-key">{{data.secret_key}}</span></p>
+    <p>Your secret key is <span class="secret-key">{{ secret_key }}</span></p>
+    <p>You should <span class="important">keep a record of the secret key</span> above, as you can use it to check that your vote was correctly counted once the results have been announced.</p>
 
     <p>To see the results click <a href='results'>here</a></p>
 {% endblock %}

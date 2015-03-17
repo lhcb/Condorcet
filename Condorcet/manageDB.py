@@ -19,14 +19,10 @@ if __name__ == '__main__':
 import os, sys, random, string
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
 
-from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
 
-app.config['SQLALCHEMY_DATABASE_URI'] =  r'sqlite:///databases/votes.db'
-app.config['SQLALCHEMY_BINDS'] = {
-    'voters' : r'sqlite:///databases/voters.db',
-    }
+
 db = SQLAlchemy(app)
 
 

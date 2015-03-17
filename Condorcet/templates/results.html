@@ -1,28 +1,30 @@
 {% extends "layout.html" %}
+{% from '_helpers.html' import list_as_fragment %}
 {% block body %}
-  <h1>Voting results</h1>
+  <h1>Results</h1>
 
-  <p>{{data.winner_str}}</p>
+  {% if winners | length > 1 %}
+    <p>There was a <span class="important">draw</span>. The winners are {{ list_as_fragment(winners) }}.</p>
+  {% else %}
+    <p>The winner of the election is <span class="important">{{ winners[0] }}</span>.</p>
+  {% endif %}
 
   <table>
-    <!-- <col width="130"> -->
-     <tr>
-       <td> secret key </td>
-      {% for e in range(1,data.numCandidates+1) %}
-      <td> choice number {{ e }} </td>
-      {% endfor %}
-    </tr>
-    {% for row in data.table_DB %}
+    <thead>
+       <tr>
+         <th>Secret key</th>
+         {% for _ in range(numCandidates) %}
+         <th>Choice #{{ loop.index }} </th>
+         {% endfor %}
+      </tr>
+    </thead>
+    {% for row in results %}
     <tr>
-      {% for e in row %}
-      <td> {{ e }} </td>
+      <td><span class="secret-key">{{ row[0] }}</span></td>
+      {% for el in row[1:] %}
+      <td>{{ el }}</td>
       {% endfor %}
     </tr>
     {% endfor %}
   </table>
-
-
-  <hr>
-  <address></address>
-  <!-- hhmts start -->Last modified: Mon Mar 16 23:14:21 CET 2015 <!-- hhmts end -->
 {% endblock %}
