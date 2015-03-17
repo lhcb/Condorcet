@@ -37,7 +37,7 @@ def getListChoice(vote):
 
 
 def get_environ(var):
-    return request.environ(var)
+    return request.environ[var]
 
 
 @app.before_request
@@ -52,11 +52,11 @@ def set_user():
         session['user'] = {
             'username': get_environ('ADFS_LOGIN'),
             'fullname': ' '.join([
-                get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
+            get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ])
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
-
+    
 
 def author_required(f):
     @wraps(f)
@@ -70,7 +70,7 @@ def author_required(f):
 def build_path(path=''):
     return os.path.join(app.config['APPLICATION_ROOT'], path)
 
-
+@app.route('/') # needed to make it work on afs website!
 @app.route(build_path())
 @author_required
 def root():
