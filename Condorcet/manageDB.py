@@ -61,6 +61,9 @@ def initDB():
         newVoter = Voters(fullname)
         db.session.add(newVoter)
     db.session.commit()
+    os.chmod(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/votes.db'),0666)
+    os.chmod(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/voters.db'),0666)
+    
 
 def isInDB(fullname):
     try:
