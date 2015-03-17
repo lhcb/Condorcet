@@ -31,7 +31,7 @@ def get_environ(var):
 
 @app.before_request
 def set_user():
-    # TODO (AP): check that the user is on the author list, else redirect, (GD) done
+    # Set user as GD when debugging, else use CERN SSO credentials
     if app.config['DEBUG']:
         session['user'] = {
             'username': 'gdujany',
