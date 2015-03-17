@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   <h2>Confirm your vote</h2>
-  <p>Please confirm that the ordered list below correctly represents your choices. If this ordering is incorrect <a href="{{ url_for('root') }}">go back to order again</a>.
+  <p>Please confirm that the ordered list below correctly represents your choices. If this ordering is incorrect you can <a href="{{ url_for('root') }}">go back to order again</a>.
   <ol>
     {% for choice in choices %}
     <li>{{ choice }}</li>
@@ -10,6 +10,6 @@
   <p>If this ordering is correct, click ‘Confirm’ below to submit your vote. This action is final and your <span class="important">vote cannot be changed</span> after confirmation.</p>
 
   <form action={{ url_for('savePoll') }}>
-      <input type="submit" value="Confirm" />
+      <input type="submit" value="Confirm vote" />
   </form>
 {% endblock %}
