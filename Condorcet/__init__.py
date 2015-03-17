@@ -21,6 +21,7 @@ letter2name = {key: val for key, val in zip(alphabet, app.config['OPTIONS'])}
 def getStrOrder(choice_made):
     return ''.join([name2letter[choice] for choice in choice_made])
 
+
 def getListChoice(vote):
     return [letter2name[letter] for letter in vote]
 
@@ -44,20 +45,22 @@ def set_user():
                 get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ])
         }
-    if  not isAuthor(session['user']['fullname']):
+    if not isAuthor(session['user']['fullname']):
         return render_template('notAuthor.html')
+
 
 def build_path(path=''):
     return os.path.join(app.config['APPLICATION_ROOT'], path)
 
 
 @app.route(build_path())
-@app.route('/')
-def root():    
+def root():
     username = session['user']['username']
-    if manageDB.isInDB(username): return render_template('alreadyVoted.html')
+    if manageDB.isInDB(username):
+        return render_template('alreadyVoted.html')
     choices_copy = app.config['OPTIONS'][:]
-    # FIXME: like this it shuffle fine but when I reload the page the votes already set change!
+    # FIXME: like this it shuffle fine but when I reload the page the votes
+    # already set change!
     random.shuffle(choices_copy)
     poll_data['fields'] = choices_copy
     return render_template('poll.html', data=poll_data)
@@ -65,20 +68,21 @@ def root():
 
 
 
-
 @app.route(build_path('/poll'))
-@app.route('/poll')
-def confimVote():
+def confirmVote():
     order = []
     if len(request.args) == len(choices):
         for num in [str(i) for i in range(1,len(choices)+1)]:
             order.append(request.args.get(num))
     choices = app.config['OPTIONS']
         vote = getStrOrder(order)
-    else: vote = '' # so that fails next if
+    else:
+        # So that fails next if
+        vote = ''
     if len(set(vote)) == len(choices):
         username = session['user']['username']
-        if manageDB.isInDB(username): return render_template('alreadyVoted.html')
+        if manageDB.isInDB(username):
+            return render_template('alreadyVoted.html')
         session['vote'] = vote
         confirm_data = {
             'saveVote_address' : build_path('saveVote'),
@@ -86,15 +90,18 @@ def confimVote():
             }
         return render_template('confirmVote.html',data=confirm_data)       
     else:
-        flash('You must rank all candidates and two element cannot share the same position, try again', 'error')
+        flash((
+            'You must rank all candidates and two candidates cannot share the '
+            'same position. Please try again.'
+        ), 'error')
     return redirect(build_path())
 
 
 @app.route(build_path('/saveVote'))
-@app.route('/saveVote')
 def savePoll():
     username = session['user']['username']
-    if manageDB.isInDB(username): return render_template('alreadyVoted.html')
+    if manageDB.isInDB(username):
+        return render_template('alreadyVoted.html')
     secret_key = manageDB.addVote(username, session['vote'])
     return render_template('congrats.html', secret_key=secret_key)
 
@@ -113,6 +120,4 @@ def result():
     
  
 if __name__ == '__main__':
-    # Always run with debugging when using `python Condorcet/__init__.py`
-    app.config['DEBUG'] = True
-    app.run()
+    app.run(debug=app.config['DEBUG'])
