@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h1>{{session.user.fullname}}, it would seems that you have already voted.</h1>
+    <h2>You have already voted</h2>
 
-    <p>To see the results click <a href='results'>here</a></p>
+    <p>Each LHCb author is allowed a single unalterable vote, and there is already a vote registered for {{ session.user.fullname }}. If you believe that you have not yet voted, please <a href="#">contact the membership committee</a>.</p>
+    <p><a href='results'>Click here</a> to see the election results.</p>
 {% endblock %}
