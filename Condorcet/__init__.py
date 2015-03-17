@@ -67,15 +67,13 @@ def root():
                            fields=choices_copy)
 
 
-
-
-@app.route(build_path('/poll'))
+@app.route(build_path('/poll'), methods=['POST'])
 def confirmVote():
     order = []
-    if len(request.args) == len(choices):
-        for num in [str(i) for i in range(1,len(choices)+1)]:
-            order.append(request.args.get(num))
     choices = app.config['OPTIONS']
+    if len(request.form) == len(choices):
+        for num in [str(i) for i in range(1, len(choices) + 1)]:
+            order.append(request.form.get(num))
         vote = getStrOrder(order)
     else:
         # So that fails next if
@@ -85,11 +83,7 @@ def confirmVote():
         if manageDB.isInDB(username):
             return render_template('alreadyVoted.html')
         session['vote'] = vote
-        confirm_data = {
-            'saveVote_address' : build_path('saveVote'),
-            'preference' :', '.join(getListChoice(vote)),
-            }
-        return render_template('confirmVote.html',data=confirm_data)       
+        return render_template('confirmVote.html', choices=getListChoice(vote))
     else:
         flash((
             'You must rank all candidates and two candidates cannot share the '
