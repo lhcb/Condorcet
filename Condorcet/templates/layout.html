@@ -1,3 +1,4 @@
+{% from "_helpers.html" import contact_url %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -22,7 +23,7 @@
     <div class="footer cf">
       <ul class="right">
         <li><a href="#">Help</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="{{ contact_url() }}">Contact</a></li>
       </ul>
       <div class="left meta">You are signed in as <span class="username">{{ session.user.username }}</span></div>
     </div>
