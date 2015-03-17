@@ -24,8 +24,8 @@ from verifyAuthors import isAuthor
 import elections
 
 alphabet = string.lowercase
-name2letter = {key: val for key, val in zip(app.config['OPTIONS'], alphabet)}
-letter2name = {key: val for key, val in zip(alphabet, app.config['OPTIONS'])}
+name2letter = dict([(key, val) for key, val in zip(app.config['OPTIONS'], alphabet)])
+letter2name = dict([(key, val) for key, val in zip(alphabet, app.config['OPTIONS'])])
 
 
 def getStrOrder(choice_made):
