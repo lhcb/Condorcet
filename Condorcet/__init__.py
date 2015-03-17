@@ -1,4 +1,13 @@
-from flask import Flask, render_template, request, redirect, session, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    session,
+    flash,
+    url_for
+)
+from functools import wraps
 import os
 import sys
 import random
@@ -45,8 +54,16 @@ def set_user():
                 get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ])
         }
-    if not isAuthor(session['user']['fullname']):
-        return render_template('notAuthor.html')
+    session['user']['author'] = isAuthor(session['user']['fullname'])
+
+
+def author_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session['user']['author']:
+            return redirect(url_for('notAuthor'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def build_path(path=''):
@@ -54,6 +71,7 @@ def build_path(path=''):
 
 
 @app.route(build_path())
+@author_required
 def root():
     username = session['user']['username']
     if manageDB.isInDB(username):
@@ -68,6 +86,7 @@ def root():
 
 
 @app.route(build_path('/poll'), methods=['POST'])
+@author_required
 def confirmVote():
     order = []
     choices = app.config['OPTIONS']
@@ -93,6 +112,7 @@ def confirmVote():
 
 
 @app.route(build_path('/saveVote'))
+@author_required
 def savePoll():
     username = session['user']['username']
     if manageDB.isInDB(username):
@@ -120,6 +140,14 @@ def result():
                            winners=winners,
                            numCandidates=len(choices),
                            results=results)
+
+
+@app.route(build_path('/unauthorised'))
+def notAuthor():
+    # Authors shouldn't see this page
+    if session['user']['author']:
+        return redirect(url_for('root'))
+    return render_template('notAuthor.html'), 403
 
 
 if __name__ == '__main__':
