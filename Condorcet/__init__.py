@@ -103,16 +103,24 @@ def savePoll():
 
 @app.route(build_path('/results'))
 def result():
-    order = []
-    choices = app.config['OPTIONS']
     # Prepare page with results
     preferences = manageDB.getPreferences()
-    winners = getListChoice(elections.getWinner(preferences, [i for cont,i in enumerate(alphabet) if cont< len(choices)]))
-    result_data = dict(numCandidates=len(choices))
-    result_data['winner_str'] = ('The winner is' if len(winners)==1 else 'The winners are')+' '+', '.join(winners)
-    result_data['table_DB'] = [[i[0]]+getListChoice(i[1]) for i in manageDB.getVotes()]
-    return render_template('results.html', data=result_data)
-    
- 
+    choices = app.config['OPTIONS']
+    winners = getListChoice(
+        elections.getWinner(
+            preferences,
+            [i for cont, i in enumerate(alphabet) if cont < len(choices)]
+        )
+    )
+    results = [
+        [i[0]] + getListChoice(i[1])
+        for i in manageDB.getVotes()
+    ]
+    return render_template('results.html',
+                           winners=winners,
+                           numCandidates=len(choices),
+                           results=results)
+
+
 if __name__ == '__main__':
     app.run(debug=app.config['DEBUG'])
