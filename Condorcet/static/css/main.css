@@ -101,31 +101,91 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
-  background: #0074c2;
+  background: #0068b5;
+  color: #f1fbff;
   cursor: pointer;
 }
 
 input[type=submit]:active {
-  position: relative;
-  top: 1px;
+  background: #0073bb;
 }
 
 .flash {
   margin: 10px 0;
   padding: 10px;
-  border: 1px solid black;
+  border: 1px solid #e0e0e0;
 }
 
 .flash.error {
-  border-color: red;
+  border-left: 3px solid #e72821;
+  color: #e72821;
 }
 
 .flash.success {
-  border-color: green;
+  border-left: 3px solid #2eab41;
+  color: #2eab41;
 }
 
-.secret-key {
+.secret-key, .username {
+  font-family: Consolas, Menlo, Courier, monospace;
+}
+
+.secret-key.standout {
   display: block;
+  margin: 15px 0 10px 0;
   text-align: center;
   font-size: 24px;
+}
+
+.important {
+  font-weight: 700;
+}
+
+.meta {
+  color: #666;
+}
+
+.footer {
+  padding: 10px 0 15px 0;
+  border-top: 1px solid #ddd;
+}
+
+.footer ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.footer li {
+  display: inline;
+  padding: 0 5px;
+}
+
+.footer li:first-child {
+  padding-left: 0;
+}
+
+/* Allow floats on wider screens */
+@media (min-width: 460px) {
+  .footer ul {
+    text-align: right;
+  }
+
+  .footer .left {
+    float: left;
+  }
+
+  .footer .right {
+    float: right;
+  }
+}
+
+/* Clearfix */
+.cf:before, .cf:after {
+    content: " ";
+    display: table;
+}
+
+.cf:after {
+    clear: both;
 }
