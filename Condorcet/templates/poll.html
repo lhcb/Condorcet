@@ -1,28 +1,34 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h2>{{ data.question }}</h2>
-  <p>Welcome {{session.user.fullname}}! To vote fill the form below; select only one element per row and column.</p>
+  <h2>{{ title }}</h2>
+  <p>Fill in the table below to order each candidate by your preference. The candidate selected in the first row is your first choice, the candidate selected in the second row is your second, and so on.</p>
+  <p>Once you have filled in the table, click ‘Vote’. You will be presented with your choices before confirmation.</p>
+  <p>You will cast your vote as <span class="important">{{session.user.fullname}}</span>.</p>
 
-  <form action={{ data.poll_address }}>
-  <table>
-    <col width="130">
-    <!-- <col width="80"> -->
-    <tr>
-      <td> </td>
-      {% for e in data.fields %}
-      <td> {{ e }} </td>
+  <form action="{{ url_for('confirmVote') }}" method="POST">
+  <table class="poll">
+    <thead>
+      <tr>
+        <th></th>
+        {% for f in fields %}
+        <th>{{ f }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {# We don't care about the list objects in this outer loop #}
+      {% for _ in fields %}
+      <tr>
+        <td>Choice #{{ loop.index }}</td>
+        {# Cache outer loop variable so we can use it inside inner loop #}
+        {% set outer_loop = loop %}
+        {% for field in fields %}
+        <td data-column="{{ loop.index }}">
+          <input type="radio" name="{{ outer_loop.index }}" value="{{ field }}">
+        </td>
+        {% endfor %}
+      </tr>
       {% endfor %}
-    </tr>
-    {% for num in data.num_choices %}
-    <tr>
-      <td>Choice number {{num}}: </td>
-      {% for e in data.fields %}
-      <td data-column="{{ loop.index }}">
-        <input type="radio" name="{{num}}" value="{{ e }}">
-      </td>
-      {% endfor %}
-    </tr>
-    {% endfor %}
   </table>
   <input type="submit" value="Vote" />
   </form>

@@ -62,8 +62,9 @@ def root():
     # FIXME: like this it shuffle fine but when I reload the page the votes
     # already set change!
     random.shuffle(choices_copy)
-    poll_data['fields'] = choices_copy
-    return render_template('poll.html', data=poll_data)
+    return render_template('poll.html',
+                           title=app.config['TITLE'],
+                           fields=choices_copy)
 
 
 
