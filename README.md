@@ -10,6 +10,8 @@ The application uses the [Flask](http://flask.pocoo.org/) web framework and [SQL
 To get up and running, install these dependencies and initialise the database.
 
 ```bash
+$ git clone git@github.com:gdujany/Condorcet.git
+$ cd Condorcet
 $ virtualenv venv
 $ . venv/bin/activate
 $ pip install -r requirements.txt
