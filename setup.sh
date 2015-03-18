@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH=/usr/bin/python:$PATH
+export PATH=/usr/bin/:$PATH
 virtualenv venv
 . venv/bin/activate
 pip install -r requirements.txt

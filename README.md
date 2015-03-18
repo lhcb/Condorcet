@@ -25,7 +25,7 @@ AFS
 To set up the environment the first time [in a folder on AFS](https://espace2013.cern.ch/webservices-help/websitemanagement/ManagingWebsitesAtCERN/Pages/WebsitecreationandmanagementatCERN.aspx), just modify your `PATH` to make sure the correct Python version is used, and get a copy of the [Flup](http://www.saddi.com/software/flup/) Python module, which is used as a [WSGI](http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface) bridge.
 
 ```bash
-$ export PATH=/usr/bin/python:$PATH
+$ export PATH=/usr/bin/:$PATH
 $ wget https://pypi.python.org/packages/2.6/f/flup/flup-1.0.2-py2.6.egg
 ```
 
