@@ -67,11 +67,7 @@ def author_required(f):
     return decorated_function
 
 
-def build_path(path=''):
-    return os.path.join(app.config['APPLICATION_ROOT'], path)
-
-@app.route('/') # needed to make it work on afs website!
-@app.route(build_path())
+@app.route('/') 
 @author_required
 def root():
     fullname = session['user']['fullname']
@@ -87,7 +83,7 @@ def root():
                            fields=session['candidates'])
 
 
-@app.route(build_path('/poll'), methods=['POST'])
+@app.route('/poll', methods=['POST'])
 @author_required
 def confirmVote():
     order = []
@@ -110,10 +106,10 @@ def confirmVote():
             'You must rank all candidates and two candidates cannot share the '
             'same position. Please try again.'
         ), 'error')
-    return redirect(build_path())
+    return redirect(url_for('root'))
 
 
-@app.route(build_path('/saveVote'))
+@app.route('/saveVote')
 @author_required
 def savePoll():
     fullname = session['user']['fullname']
@@ -123,7 +119,7 @@ def savePoll():
     return render_template('congrats.html', secret_key=secret_key)
 
 
-@app.route(build_path('/results'))
+@app.route('/results')
 def result():
     # Prepare page with results
     preferences = manageDB.getPreferences()
@@ -144,7 +140,7 @@ def result():
                            results=results)
 
 
-@app.route(build_path('/unauthorised'))
+@app.route('/unauthorised')
 def notAuthor():
     # Authors shouldn't see this page
     if session['user']['author']:
