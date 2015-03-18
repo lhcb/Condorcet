@@ -1,4 +1,4 @@
-#!/afs/cern.ch/user/g/gdujany/www/test8/venv/bin/python
+#!/afs/cern.ch/user/g/gdujany/www/Condorcet/venv/bin/python
 import sys, os
 base = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
 sys.path.insert(0,base+'/flup-1.0.2-py2.6.egg')

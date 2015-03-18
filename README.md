@@ -23,9 +23,6 @@ $ chmod 755 setup.sh
 $ ./setup.sh
 ```
 
-Change the first line of cgi-bin/condorcet.fcgi to point to the right version of
-python in the virtual environment created.
-
 Adapt  Condorcet/config.py to your needs, in particular change `APPICATION_ROOT`.
 
 Go to the [CERN AFS web configuration page](https://webservices.web.cern.ch/webservices/Tools/SiteConfiguration/) and enable CGI execution.
