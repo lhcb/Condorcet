@@ -1,7 +1,7 @@
 AddHandler fastcgi-script .fcgi
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ cgi-bin/homepage.fcgi/$1 [QSA,L]
+RewriteRule ^(.*)$ cgi-bin/condorcet.fcgi/$1 [QSA,L]
 
 SSLRequireSSL
 AuthType shibboleth
