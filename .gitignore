@@ -4,3 +4,6 @@
 *.pyc
 *.db
 *.DS*
+._*
+venv/
+flup-1.0.2-py2.6.egg
