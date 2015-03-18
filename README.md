@@ -15,7 +15,7 @@ $ cd Condorcet
 $ virtualenv venv
 $ . venv/bin/activate
 $ pip install -r requirements.txt
-$ chmod 755 Condorcet/managDB.py
+$ chmod 755 Condorcet/manageDB.py
 $ Condorcet/manageDB.py --init
 ```
 
