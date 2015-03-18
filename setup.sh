@@ -15,4 +15,5 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo $DIR
 cat cgi-bin/condorcet.fcgi | sed -e "s;/afs/cern.ch/user/g/gdujany/www/Condorcet;$DIR;" > cgi-bin/tmp.fcgi
 mv cgi-bin/tmp.fcgi cgi-bin/condorcet.fcgi
+chmod 755 cgi-bin/condorcet.fcgi
 
