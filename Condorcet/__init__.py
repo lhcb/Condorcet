@@ -12,12 +12,17 @@ import os
 import sys
 import random
 import string
+import time
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
 
 
 app = Flask(__name__)
 app.config.from_object('Condorcet.config')
+
+# convert times in times-tuple
+for time_label in 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS':
+    app.config[time_label] = time.strptime(app.config[time_label],app.config['DATE_FORMAT'])
 
 import manageDB
 from verifyAuthors import isAuthor
@@ -66,8 +71,33 @@ def author_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def during_elections(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if time.localtime() < app.config['START_ELECTION']:
+            return render_template('notCorrectDate.html',
+                                   title = 'Too early to vote',
+                                   message='You are a bit too early to vote, we appreciate your enthusiasm but the election will be opening only on '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+        if time.localtime() > app.config['CLOSE_ELECTION']:
+            return render_template('notCorrectDate.html',
+                                   title = 'Too late to vote',
+                                   message='I am sorry but the closing date of the election was the '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+        return f(*args, **kwargs)
+    return decorated_function
 
-@app.route('/') 
+def publish_results(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if time.localtime() < app.config['VIEW_RESULTS']:
+            return render_template('notCorrectDate.html',
+                                   title = 'Too early to see the results',
+                                   message='I am sorry but the results are not available yet, visit again this page after the '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+@app.route('/')
+@during_elections
 @author_required
 def root():
     fullname = session['user']['fullname']
@@ -84,6 +114,7 @@ def root():
 
 
 @app.route('/poll', methods=['POST'])
+@during_elections
 @author_required
 def confirmVote():
     order = []
@@ -110,6 +141,7 @@ def confirmVote():
 
 
 @app.route('/saveVote')
+@during_elections
 @author_required
 def savePoll():
     fullname = session['user']['fullname']
@@ -120,6 +152,7 @@ def savePoll():
 
 
 @app.route('/results')
+@publish_results
 def result():
     # Prepare page with results
     preferences = manageDB.getPreferences()

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% from "_helpers.html" import contact_url %}
+{% block body %}
+    <h2>{{title}}</h2>
+    <p>{{message}}</p>
+    <p>If you think this is incorrect, please <a href="{{ contact_url() }}">contact the membership committee</a>.</p>
+
+{% endblock %}
+
+
