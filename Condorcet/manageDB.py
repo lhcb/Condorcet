@@ -59,6 +59,10 @@ def initDB():
     db.create_all()
     for fullname in listAuthors():
         newVoter = Voters(fullname)
+        if Voters.query.filter_by(fullname=fullname).all():
+            # raise KeyError(fullname+' appears twice in the authors list')
+            print fullname+' appears twice in the authors list'
+            continue
         db.session.add(newVoter)
     db.session.commit()
     os.chmod(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/votes.db'),0666)
