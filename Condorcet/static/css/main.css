@@ -109,6 +109,68 @@ input[type=submit]:active {
   background: #0073bb;
 }
 
+input[type=submit]:disabled {
+  background: #D5D5D5;
+  color: #ffffff;
+}
+
+/* Draggable interface */
+.container {
+  /* height: 280px; */
+  width: 100%;
+  padding-left: 5% ;
+  padding-right: 5% ;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.block {
+  border:solid 1px;
+  width: 40%;
+  /* height: 250px; */
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  height: auto ;
+}
+
+.boxtitle {
+  font-weight: bold;
+  text-align: center;
+}
+
+.block__list_tags:after {
+    clear: both;
+    content: '';
+    display: block;
+}
+
+.block__list {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+  padding-left: 20px;
+  padding-right: 20px;
+  /* height: 200px; */
+}
+
+.block__list li {
+  cursor: move;
+			color: #fff;
+            float: left;
+            margin: 10px 0px 10px 0;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            /* min-width: 20px; */
+            width: 100%;
+			background-color: #0073bb;
+			text-align: center;
+            display: block;
+}
+ 
 .flash {
   margin: 10px 0;
   padding: 10px;
