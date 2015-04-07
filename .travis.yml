@@ -1,0 +1,15 @@
+language: python
+python:
+  - 2.6
+  - 2.7
+install:
+  # Install Condorcet dependencies
+  - pip install -r requirements.txt
+  # Install test dependencies
+  - pip install flake8
+# Run flake8, a Python code linter
+before_script:
+  flake8 Condorcet
+# Run the test suite
+script:
+  - python -m unittest discover

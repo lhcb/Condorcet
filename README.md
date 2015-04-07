@@ -1,5 +1,4 @@
-Condorcet
-=========
+# Condorcet [![Build status](https://travis-ci.org/alexpearce/Condorcet.svg?branch=init-tests)](http://travis-ci.org/alexpearce/Condorcet)
 
 Condorcet is a web application for voting.
 
