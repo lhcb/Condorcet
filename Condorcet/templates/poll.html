@@ -1,12 +1,28 @@
 {% extends "layout.html" %}
+
+{% block head %}
+    <script type="text/javascript">
+        (function () {
+            var head = document.getElementsByTagName("head")[0];
+            if (head) {
+                var scriptStyles = document.createElement("link");
+                scriptStyles.rel = "stylesheet";
+                scriptStyles.type = "text/css";
+                scriptStyles.href = "{{ url_for('static', filename='css/script-styles.css') }}";
+                head.appendChild(scriptStyles);
+            }
+        }())
+    </script>
+{% endblock %}
+
 {% block body %}
   <h2>{{ title }}</h2>
   <p>Fill in the table below to order each candidate by your preference. The candidate selected in the first row is your first choice, the candidate selected in the second row is your second, and so on.</p>
   <p>Once you have filled in the table, click ‘Vote’. You will be presented with your choices before confirmation.</p>
   <p>You will cast your vote as <span class="important">{{session.user.fullname}}</span>.</p>
 
-  <form action="{{ url_for('confirmVote') }}" method="POST">
-  <table class="poll">
+  <form action="{{ url_for('confirmVote') }}" method="POST" id="radioPoll">
+  <table class="poll" id="hide-with-script">
     <thead>
       <tr>
         <th></th>
@@ -30,6 +46,27 @@
       </tr>
       {% endfor %}
   </table>
-  <input type="submit" value="Vote" />
+  <!-- Fancy ordering -->
+  	<div id="draggablePoll" style="display: none" class="container">
+		<div class="block" style="float: left">
+			<div class="boxtitle">Ranking</div>
+			<ul id="ranking" class="block__list block__list_words">
+			</ul>
+		</div>
+
+		<div class="block" style="float: right">
+			<div class="boxtitle">Candidates</div>
+			<ul id="pool" class="block__list block__list_tags">
+                {% for field in fields %}
+                   <li>{{ field }}</li>
+                {% endfor %}
+			</ul>
+		</div>
+
+	</div>
+
+  <input type="submit" value="Vote" id="voteButton"/>
   </form>
+  <script src="{{ url_for('static', filename='js/Sortable.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/draggable.js') }}"></script>
 {% endblock %}
