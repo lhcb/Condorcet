@@ -4,13 +4,6 @@ Here I use 2 different databases, one for users to keep track of who already
 voted and one for saving votes aleng with the secret keys
 '''
 
-# Name of the folder to contain the databases
-DB_DIR = 'databases'
-# Name of the database file to hold votes
-VOTES_DB = 'votes.db'
-# Name the database file to hold list of voters who have voted
-VOTERS_DB = 'voters.db'
-
 # Options parser
 if __name__ == '__main__':
     import argparse
@@ -25,16 +18,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 import os
-import sys
 import random
 import string
-this_files_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(this_files_dir, '..'))
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from Condorcet import app
 from verifyAuthors import listAuthors
+from verifyAuthors import authors_file as default_authors_file
 
 db = SQLAlchemy(app)
 
@@ -70,14 +61,9 @@ class Voters(db.Model):
         return '<{fullname}>'.format(**self.__dict__)
 
 
-def initDB():
-    dbdir = os.listdir(os.path.join(this_files_dir, DB_DIR))
-    if 'voters.db' in dbdir or VOTES_DB in dbdir:
-        raise IOError(
-            'Database already there, use --reset option to recreate'
-        )
-    db.create_all()
-    for fullname in listAuthors():
+def populateTables(authors_file):
+    """Populate voters table with author list."""
+    for fullname in listAuthors(authors_file):
         newVoter = Voters(fullname)
         if Voters.query.filter_by(fullname=fullname).all():
             # raise KeyError(fullname+' appears twice in the authors list')
@@ -85,8 +71,22 @@ def initDB():
             continue
         db.session.add(newVoter)
     db.session.commit()
-    os.chmod(os.path.join(this_files_dir, DB_DIR, VOTES_DB), 0666)
-    os.chmod(os.path.join(this_files_dir, DB_DIR, VOTERS_DB), 0666)
+
+
+def initDB(database_folder, authors_file):
+    """Create voters and votes databases at database_folder.
+
+    The authors_file is used to populate the database.
+    """
+    dbdir = os.listdir(database_folder)
+    if app.config['VOTERS_DB'] in dbdir or app.config['VOTES_DB'] in dbdir:
+        raise IOError(
+            'Database already there, use --reset option to recreate'
+        )
+    db.create_all()
+    populateTables(authors_file)
+    os.chmod(os.path.join(database_folder, app.config['VOTES_DB']), 0666)
+    os.chmod(os.path.join(database_folder, app.config['VOTERS_DB']), 0666)
 
 
 def isInDB(fullname):
@@ -134,6 +134,7 @@ def getPreferences():
 
 
 if __name__ == '__main__':
+    dbdir = app.config['DB_DIR']
     if args.rm or args.reset:
         votes_file = os.path.join(this_files_dir, DB_DIR, VOTES_DB)
         voters_file = os.path.join(this_files_dir, DB_DIR, VOTERS_DB)
@@ -141,6 +142,6 @@ if __name__ == '__main__':
             if os.path.exists(db_file):
                 os.remove(db_file)
     if args.init or args.reset:
-        initDB()
+        initDB(dbdir, default_authors_file)
     if args.p:
-        readDB()
+        readDB(dbdir, default_authors_file)
