@@ -13,8 +13,10 @@ import sys
 import random
 import string
 import time
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
+# Add this directory and the one above to PYTHONPATH
+this_files_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_files_dir)
+sys.path.append(os.path.join(this_files_dir, '..'))
 
 
 app = Flask(__name__)
@@ -29,8 +31,12 @@ from verifyAuthors import isAuthor
 import elections
 
 alphabet = string.lowercase
-name2letter = dict([(key, val) for key, val in zip(app.config['OPTIONS'], alphabet)])
-letter2name = dict([(key, val) for key, val in zip(alphabet, app.config['OPTIONS'])])
+name2letter = dict([
+    (key, val) for key, val in zip(app.config['OPTIONS'], alphabet)
+])
+letter2name = dict([
+    (key, val) for key, val in zip(alphabet, app.config['OPTIONS'])
+])
 
 
 def getStrOrder(choice_made):
@@ -57,11 +63,11 @@ def set_user():
         session['user'] = {
             'username': get_environ('ADFS_LOGIN'),
             'fullname': ' '.join([
-            get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
+                get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ])
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
-    
+
 
 def author_required(f):
     @wraps(f)
@@ -103,7 +109,8 @@ def root():
     fullname = session['user']['fullname']
     if manageDB.isInDB(fullname):
         return render_template('alreadyVoted.html')
-    try: session['candidates']
+    try:
+        session['candidates']
     except KeyError:
         choices_copy = app.config['OPTIONS'][:]
         random.shuffle(choices_copy)

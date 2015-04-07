@@ -1,31 +1,22 @@
+import os
 import xml.etree.ElementTree
-import os, sys, random, string
+
 from config import AUTHORS_LIST
 
-authors_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),AUTHORS_LIST)
+this_files_dir = os.path.dirname(os.path.realpath(__file__))
+authors_file = os.path.join(this_files_dir, AUTHORS_LIST)
 
-def isAuthor(fullname, authors_file=authors_file):
-
-    tree = xml.etree.ElementTree.parse(authors_file)
-    root = tree.getroot()
-    
-    """
-    authors are in root[4], the given name is root[4][i][0].text and surname root[4][i][1].text
-    """
-
-    authors = [' '.join([child[0].text, child[1].text]) for child in root[4]]
-
-    return fullname in authors
 
 def listAuthors(authors_file=authors_file):
+    """Return the list of authors as full names.
 
+    Authors are in root[4], the given name is root[4][i][0].text and surname
+    root[4][i][1].text, where root is the root XML element in the authors DB.
+    """
     tree = xml.etree.ElementTree.parse(authors_file)
     root = tree.getroot()
+    return [' '.join([child[0].text, child[1].text]) for child in root[4]]
 
-    """
-    authors are in root[4], the given name is root[4][i][0].text and surname root[4][i][1].text
-    """
 
-    authors = [' '.join([child[0].text, child[1].text]) for child in root[4]]
-
-    return authors
+def isAuthor(fullname, authors_file=authors_file):
+    return fullname in listAuthors(authors_file=authors_file)
