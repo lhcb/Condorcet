@@ -39,11 +39,11 @@ class Voters(db.Model):
     __bind_key__ = 'voters'
     fullname = db.Column(db.String(20), unique=True, primary_key=True)
     hasVoted = db.Column(db.Boolean)
-    
+
     def __init__(self, fullname):
         self.fullname = fullname
         self.hasVoted = False # at initialization is set to False
-        
+
     def __repr__(self):
         return '<User: {fullname}, has voted: {hasVoted}>'.format(**self.__dict__)
 
@@ -52,7 +52,7 @@ class Voters(db.Model):
 
 from verifyAuthors import listAuthors
 
-    
+
 def initDB():
     if 'voters.db' in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases')) or 'votes.db' in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases')):
         raise IOError('Database already there, use --reset option if you want to substitute it')
@@ -67,7 +67,7 @@ def initDB():
     db.session.commit()
     os.chmod(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/votes.db'),0666)
     os.chmod(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/voters.db'),0666)
-    
+
 
 def isInDB(fullname):
     try:
@@ -75,7 +75,7 @@ def isInDB(fullname):
     except AttributeError:
         raise KeyError(fullname+' not in the list of possible voters')
 
-def addVote(fullname, vote):   
+def addVote(fullname, vote):
     if isInDB(fullname):
         raise KeyError(fullname+' has already voted')
     else:
@@ -102,10 +102,13 @@ def getPreferences():
 
 
 if __name__ == '__main__':
-    
+
     if args.rm or args.reset:
-        os.remove(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/votes.db'))
-        os.remove(os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/voters.db'))
+        votes_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/votes.db')
+        voters_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),'databases/voters.db')
+        for db_file in [votes_file, voters_file]:
+            if os.path.exists(db_file):
+                os.remove(db_file)
     if args.init or args.reset:
         initDB()
     if args.p:
