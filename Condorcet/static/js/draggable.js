@@ -50,6 +50,7 @@
     byId("voteButton").disabled = true ;
     // Nasty hack to get same size boxes
     byId("ranking").style.height = byId("pool").clientHeight + 'px';
+    byId("pool").style.height = byId("pool").clientHeight + 'px';
 
 	if (!console.log) {
 		console.log = function () {
