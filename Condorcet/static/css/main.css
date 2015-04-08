@@ -176,6 +176,11 @@ input[type=submit]:disabled {
     background-color: #fff;
 }
 
+.block__list_tags .sortable-ghost {
+    /* opacity: 0.3; */
+    background-color: #fff;
+}
+
  
 .flash {
   margin: 10px 0;
