@@ -159,17 +159,22 @@ input[type=submit]:disabled {
 
 .block__list li {
   cursor: move;
-			color: #fff;
-            float: left;
-            margin: 10px 0px 10px 0;
-            padding-top: 5px;
-            padding-bottom: 5px;
-            /* min-width: 20px; */
-            width: 100%;
-			background-color: #0073bb;
-			text-align: center;
-            display: block;
+  color: #fff;
+  float: left;
+  margin: 10px 0px 10px 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  /* min-width: 20px; */
+  width: 100%;
+  background-color: #0073bb;
+  text-align: center;
+  display: block;
 }
+
+.block__list_words .sortable-ghost {
+    opacity: 0.3;
+}
+
  
 .flash {
   margin: 10px 0;

@@ -3,6 +3,8 @@
 
 	var byId = function (id) { return document.getElementById(id); },
 
+        byClass = function (className) { return document.getElementsByClassName(className); },
+
         loadScripts = function (desc, callback) {
             var deps = [], key, idx = 0;
 
@@ -36,13 +38,18 @@
             })()
         },
 
-        console = window.console;
+        console = window.console,
 
-    byId("draggablePoll").style.display = "block" ;
+        numChoices = Math.sqrt(byId("radioPoll").length-1);;
+
+    var objectsToShow = byClass("show-with-script") ;
+    // console.log(objectsToShow);
+    for (var i = 0; i < objectsToShow.length; i++ ) {
+        objectsToShow[i].style.display = "block" ;
+    }
     byId("voteButton").disabled = true ;
     // Nasty hack to get same size boxes
     byId("ranking").style.height = byId("pool").clientHeight + 'px';
-    var numChoices = Math.sqrt(byId("radioPoll").length-1);
 
 	if (!console.log) {
 		console.log = function () {
@@ -72,7 +79,7 @@
 				localStorage.setItem(sortable.options.group, order.join('|'));
 			}
 		},
-		onAdd: function (evt){
+		onSort: function (evt){
             if (this.el.children.length==numChoices) {
                 var radioPoll = byId("radioPoll");
                 for (var i = 0; i < numChoices; i++ ){
