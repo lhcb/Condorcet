@@ -18,8 +18,9 @@ CONTACT = 'admin@example.com'
 
 # Dates
 
-# Format to parse the date, see details at https://docs.python.org/2/library/time.html#time.strftime
-DATE_FORMAT = '%d/%m/%Y %H.%M' # '%d/%m/%Y'
+# Format to parse the date, see details at
+# https://docs.python.org/2/library/time.html#time.strftime
+DATE_FORMAT = '%d/%m/%Y %H.%M'
 # Startig time of the election
 START_ELECTION = '28/03/2008 12.23'
 # Closing time of the election
@@ -28,11 +29,13 @@ CLOSE_ELECTION = '28/03/2029 12.47'
 VIEW_RESULTS = '28/03/2014 12.24'
 
 
-# xml file with author list, can be downloaded form: https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php
-# write only the file name and place the file in the same folder as this config file
+# xml file with author list, can be downloaded form:
+# https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php
+# write only the file name and place the file in the same folder as this config
+# file
 AUTHORS_LIST = 'LHCb_Authorship_flat_28-Mar-2015.xml'
 
-####################################################################################################
+###############################################################################
 
 # Configuration below is for the application itself, does not affect voting
 

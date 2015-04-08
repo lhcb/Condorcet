@@ -24,7 +24,9 @@ app.config.from_object('Condorcet.config')
 
 # convert times in times-tuple
 for time_label in 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS':
-    app.config[time_label] = time.strptime(app.config[time_label],app.config['DATE_FORMAT'])
+    app.config[time_label] = time.strptime(
+        app.config[time_label], app.config['DATE_FORMAT']
+    )
 
 import manageDB
 from verifyAuthors import isAuthor
@@ -77,27 +79,46 @@ def author_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def during_elections(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if time.localtime() < app.config['START_ELECTION']:
+            # TODO factor out long string to view
+            start = time.strftime(
+                '%d %B %Y at %H.%M',
+                app.config['START_ELECTION']
+            )
+            message = 'The election will be begin on ' + start
             return render_template('notCorrectDate.html',
-                                   title = 'Too early to vote',
-                                   message='You are a bit too early to vote, we appreciate your enthusiasm but the election will be opening only on '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+                                   title='Too early to vote',
+                                   message=message)
         if time.localtime() > app.config['CLOSE_ELECTION']:
+            # TODO factor out long string to view
+            close = time.strftime(
+                '%d %B %Y at %H.%M',
+                app.config['CLOSE_ELECTION']
+            )
+            message = 'The closing date of the election was the ' + close
             return render_template('notCorrectDate.html',
-                                   title = 'Too late to vote',
-                                   message='I am sorry but the closing date of the election was the '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+                                   title='Too late to vote',
+                                   message=message)
         return f(*args, **kwargs)
     return decorated_function
+
 
 def publish_results(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if time.localtime() < app.config['VIEW_RESULTS']:
+            results = time.strftime(
+                '%d %B %Y at %H.%M',
+                app.config['START_ELECTION']
+            )
+            message = 'The results will be availabe on ' + results
             return render_template('notCorrectDate.html',
-                                   title = 'Too early to see the results',
-                                   message='I am sorry but the results are not available yet, visit again this page after the '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+                                   title='Too early to see the results',
+                                   message=message)
         return f(*args, **kwargs)
     return decorated_function
 

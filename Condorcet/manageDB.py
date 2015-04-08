@@ -136,8 +136,10 @@ def getPreferences():
 if __name__ == '__main__':
     dbdir = app.config['DB_DIR']
     if args.rm or args.reset:
-        votes_file = os.path.join(this_files_dir, DB_DIR, VOTES_DB)
-        voters_file = os.path.join(this_files_dir, DB_DIR, VOTERS_DB)
+        votes_file = os.path.join(app.config['DB_DIR'],
+                                  app.config['VOTES_DB'])
+        voters_file = os.path.join(app.config['DB_DIR'],
+                                   app.config['VOTERS_DB'])
         for db_file in [votes_file, voters_file]:
             if os.path.exists(db_file):
                 os.remove(db_file)
