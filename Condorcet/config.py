@@ -64,3 +64,7 @@ SQLALCHEMY_DATABASE_URI = r'sqlite:///{0}/{1}'.format(DB_DIR, VOTES_DB)
 SQLALCHEMY_BINDS = {
     'voters': r'sqlite:///{0}/{1}'.format(DB_DIR, VOTERS_DB),
 }
+
+# Build the full path to the authors list, should be in the same dir as this
+# config file
+AUTHORS_LIST = os.path.join(this_files_dir, AUTHORS_LIST)

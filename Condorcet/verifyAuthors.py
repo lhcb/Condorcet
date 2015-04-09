@@ -1,13 +1,9 @@
-import os
 import xml.etree.ElementTree
 
 from config import AUTHORS_LIST
 
-this_files_dir = os.path.dirname(os.path.realpath(__file__))
-authors_file = os.path.join(this_files_dir, AUTHORS_LIST)
 
-
-def listAuthors(authors_file=authors_file):
+def listAuthors(authors_file=AUTHORS_LIST):
     """Return the list of authors as full names.
 
     Authors are in root[4], the given name is root[4][i][0].text and surname
@@ -18,5 +14,5 @@ def listAuthors(authors_file=authors_file):
     return [' '.join([child[0].text, child[1].text]) for child in root[4]]
 
 
-def isAuthor(fullname, authors_file=authors_file):
+def isAuthor(fullname, authors_file=AUTHORS_LIST):
     return fullname in listAuthors(authors_file=authors_file)

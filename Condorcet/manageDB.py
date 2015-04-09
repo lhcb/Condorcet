@@ -24,8 +24,8 @@ import string
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from Condorcet import app
+from Condorcet.config import AUTHORS_LIST as default_authors_file
 from verifyAuthors import listAuthors
-from verifyAuthors import authors_file as default_authors_file
 
 db = SQLAlchemy(app)
 
