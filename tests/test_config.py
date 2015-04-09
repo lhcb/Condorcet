@@ -108,11 +108,51 @@ class TestConfig(unittest2.TestCase):
 
     def test_debug_setting_from_environment(self):
         """DEBUG should be True if the DEBUG environment variable is set."""
-        pass
+        # Should pick up whatever the value is in the environment now
+        try:
+            environ_debug = bool(os.environ['DEBUG'])
+        except KeyError:
+            environ_debug = False
+        self.assertEqual(config.DEBUG, environ_debug)
+
+        # Also try setting the environment explicitly
+        os.environ['DEBUG'] = '1'
+        reload(config)
+        self.assertEqual(config.DEBUG, True)
+        del os.environ['DEBUG']
+        reload(config)
+        self.assertEqual(config.DEBUG, False)
+
+        # Restore the environment variable if it was set
+        if environ_debug:
+            os.environ['DEBUG'] = '1'
+        reload(config)
 
     def test_application_root_setting(self):
         """APPLICATION_ROOT should depend on DEBUG."""
-        pass
+        # Should pick up whatever the value is in the environment now
+        try:
+            environ_debug = bool(os.environ['DEBUG'])
+        except KeyError:
+            environ_debug = False
+        if environ_debug:
+            root = '/'
+        else:
+            root = '/gdujany/Condorcet'
+        self.assertEqual(config.APPLICATION_ROOT, root)
+
+        # Also try setting the environment explicitly
+        os.environ['DEBUG'] = '1'
+        reload(config)
+        self.assertEqual(config.APPLICATION_ROOT, '/')
+        del os.environ['DEBUG']
+        reload(config)
+        self.assertEqual(config.APPLICATION_ROOT, '/gdujany/Condorcet')
+
+        # Restore the environment variable if it was set
+        if environ_debug:
+            os.environ['DEBUG'] = '1'
+        reload(config)
 
     def test_secret_key_presence(self):
         """SECRET_KEY should be a non-empty string of at least length 20."""
