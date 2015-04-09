@@ -22,14 +22,9 @@ sys.path.append(os.path.join(this_files_dir, '..'))
 app = Flask(__name__)
 app.config.from_object('Condorcet.config')
 
-# convert times in times-tuple
-for time_label in 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS':
-    app.config[time_label] = time.strptime(
-        app.config[time_label], app.config['DATE_FORMAT']
-    )
-
 import manageDB
-from verifyAuthors import isAuthor
+from verifyAuthors import isAuthor, isAdmin
+from updateConfig import getConfig, setConfig
 import elections
 
 alphabet = string.lowercase
@@ -69,6 +64,7 @@ def set_user():
             ])
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
+    session['user']['admin'] = isAdmin(session['user']['fullname'])
 
 
 def author_required(f):
@@ -79,25 +75,33 @@ def author_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session['user']['admin']:
+            return 'You appear not to be an admin so you cannot access this content' #redirect(url_for('notAuthor'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 def during_elections(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if time.localtime() < app.config['START_ELECTION']:
+        if time.localtime() < getConfig('START_ELECTION'):
             # TODO factor out long string to view
             start = time.strftime(
                 '%d %B %Y at %H.%M',
-                app.config['START_ELECTION']
+                getConfig('START_ELECTION')
             )
             message = 'The election will be begin on ' + start
             return render_template('notCorrectDate.html',
                                    title='Too early to vote',
                                    message=message)
-        if time.localtime() > app.config['CLOSE_ELECTION']:
+        if time.localtime() > getConfig('CLOSE_ELECTION'):
             # TODO factor out long string to view
             close = time.strftime(
                 '%d %B %Y at %H.%M',
-                app.config['CLOSE_ELECTION']
+                getConfig('CLOSE_ELECTION')
             )
             message = 'The closing date of the election was the ' + close
             return render_template('notCorrectDate.html',
@@ -110,15 +114,25 @@ def during_elections(f):
 def publish_results(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if time.localtime() < app.config['VIEW_RESULTS']:
+        if time.localtime() < getConfig('VIEW_RESULTS'):
             results = time.strftime(
                 '%d %B %Y at %H.%M',
-                app.config['START_ELECTION']
+                getConfig('START_ELECTION')
             )
             message = 'The results will be availabe on ' + results
+            if session['user']['admin']:
+                if time.localtime() > getConfig('CLOSE_ELECTION'):
+                    return f(*args, **kwargs)
+                else:
+                    close = time.strftime(
+                        '%d %B %Y at %H.%M',
+                        getConfig('CLOSE_ELECTION')
+                        )
+                    message = 'The election is still on until '+close+' so even if you are an admin you must at least wait for the election to be closed, the results will be pubblically availabe on ' + results
+            
             return render_template('notCorrectDate.html',
-                                   title='Too early to see the results',
-                                   message=message)
+                                       title='Too early to see the results',
+                                       message=message)
         return f(*args, **kwargs)
     return decorated_function
 
@@ -207,6 +221,13 @@ def notAuthor():
     if session['user']['author']:
         return redirect(url_for('root'))
     return render_template('notAuthor.html'), 403
+
+
+@app.route('/admin')
+@admin_required
+def adminPage():
+    return 'Congrats, you are an admin'
+    
 
 
 if __name__ == '__main__':
