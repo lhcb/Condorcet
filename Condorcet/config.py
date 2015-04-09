@@ -24,9 +24,9 @@ DATE_FORMAT = '%d/%m/%Y %H.%M'
 # Startig time of the election
 START_ELECTION = '28/03/2008 12.23'
 # Closing time of the election
-CLOSE_ELECTION = '28/03/2029 12.47'
+CLOSE_ELECTION = '28/03/2023 12.47'
 # Time from when it is possible to see the results
-VIEW_RESULTS = '28/03/2014 12.24'
+VIEW_RESULTS = '28/03/2008 12.24'
 
 
 # Name of the folder to contain the databases, authorlist and list admins
@@ -38,6 +38,7 @@ DB_DIR = os.path.join(this_files_dir, 'databases')
 AUTHORS_LIST = 'LHCb_Authorship_flat_28-Mar-2015.xml'
 
 # list of admins of the website, simple text file with full names of admins as they appear in AUTHOR_LIST
+# N.B. for now names are case sensitive and are "Firsname Lastname"
 # write only the file name and place the file in the same folder DB_DIR
 ADMINS_LIST = 'admins.txt'
 

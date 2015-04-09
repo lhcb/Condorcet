@@ -18,34 +18,25 @@ if __name__ == '__main__':
     parser.add_argument('-p', help='Print content of databases',
                         action='store_true')
     args = parser.parse_args()
-
+    default_config_file = args.config_file
+    default_key = args.key
+else:
+    default_config_file = 'config.py'
+    default_key = 'default'
 
 import os
 import sys
+import time
 this_files_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(this_files_dir, '..'))
 
-_fields = ['TITLE', 'OPTIONS', 'CONTACT', 'DATE_FORMAT', 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS', 'AUTHORS_LIST']
+_fields = ['KEY','TITLE', 'OPTIONS', 'CONTACT', 'DATE_FORMAT', 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS', 'AUTHORS_LIST']
 
-# for field in _fields:
-#     exec 'from config import {0}'.format(field)
-
-#if args.config_file:
-
-
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
 from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
 db = SQLAlchemy(app)
 
-sys.path.append(os.path.dirname(args.config_file))
-config_name = os.path.basename(os.path.splitext(args.config_file)[0])
-for field in _fields:
-    exec 'from {0} import {1}'.format(config_name, field)
 
-_fields.insert(0,'KEY')
-KEY = 'default'
 
 class Config(db.Model):
     KEY = db.Column(db.String(20), unique=True, primary_key=True)
@@ -79,6 +70,8 @@ def getConfig(field,KEY='default'):
     ret = getattr(Config.query.filter_by(KEY=KEY).first(),field)
     if field == 'OPTIONS':
         ret = ret.split('|')
+    elif field in ('START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS'):
+         ret = time.strptime(ret, getConfig('DATE_FORMAT',KEY))
     return ret
 
 def setConfig(field,value,KEY='default'):
@@ -89,9 +82,10 @@ def setConfig(field,value,KEY='default'):
     if field == 'OPTIONS':
         value = '|'.join(value)
     setattr(Config.query.filter_by(KEY=KEY).first(), field, value)
+    # TODO: Check if field is a date in which format I get it 
     db.session.commit()
 
-def resetConfig(KEY='default'):
+def resetConfig(KEY='default',config_file=default_config_file):
     """
     Create a new database for Config, removing the old and call updateConfig
     """
@@ -100,18 +94,22 @@ def resetConfig(KEY='default'):
     if os.path.exists(config_db):
         os.remove(config_db)
     db.create_all(bind=None)
-    os.chmod(os.path.join(database_folder, config_db), 0666)
-    updateConfig(KEY)
+    os.chmod(os.path.join(app.config['DB_DIR'], config_db), 0666)
+    updateConfig(KEY, config_file)
     
 
-def updateConfig(KEY='default'):
+def updateConfig(KEY='default',config_file=default_config_file):
     '''
     Update the KEY config reading the values from config.py
     '''
-    # Convert OPTIONS to a single string
+    sys.path.append(os.path.dirname(config_file))
+    config_name = os.path.basename(os.path.splitext(config_file)[0])
+    _fields.remove('KEY')
     for field in _fields:
-        locals()[field] = globals()[field]
-    OPTIONS = '|'.join(globals()['OPTIONS'])
+        exec 'from {0} import {1}'.format(config_name, field)
+    _fields.insert(0,'KEY')
+    KEY = default_key
+    OPTIONS = '|'.join(locals()['OPTIONS'])
     config_file = os.path.join(app.config['DB_DIR'],
                                app.config['CONFIG_DB'])
 
