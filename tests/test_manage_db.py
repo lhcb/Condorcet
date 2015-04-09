@@ -19,26 +19,26 @@ NAMES = [
 
 class TestManageDB(unittest2.TestCase):
     @classmethod
-    def setUpClass(self):
-        self.db_path = tempfile.mkdtemp()
+    def setUpClass(cls):
+        cls.db_path = tempfile.mkdtemp()
         config = {
             'SQLALCHEMY_DATABASE_URI': r'sqlite:////{0}/{1}'.format(
-                self.db_path, app.config['VOTES_DB']
+                cls.db_path, app.config['VOTES_DB']
             ),
             'SQLALCHEMY_BINDS': {
                 'voters': r'sqlite:////{0}/{1}'.format(
-                    self.db_path, app.config['VOTERS_DB']
+                    cls.db_path, app.config['VOTERS_DB']
                 )
             }
         }
         app.config.update(config)
         TestVerifyAuthors.setUpClass()
-        manageDB.initDB(self.db_path, TestVerifyAuthors.author_list_path)
+        manageDB.initDB(cls.db_path, TestVerifyAuthors.author_list_path)
 
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         TestVerifyAuthors.tearDownClass()
-        shutil.rmtree(self.db_path)
+        shutil.rmtree(cls.db_path)
 
     def setUp(self):
         """Create a temporary database filled from the dummy author list."""
