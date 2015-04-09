@@ -24,7 +24,7 @@ app.config.from_object('Condorcet.config')
 
 import manageDB
 from verifyAuthors import isAuthor, isAdmin
-from updateConfig import getConfig, setConfig
+from updateConfig import getConfig, setConfig, getConfigDict, upConfig
 import elections
 
 alphabet = string.lowercase
@@ -227,9 +227,56 @@ def notAuthor():
 
 @app.route('/admin')
 @admin_required
-def adminPage():
-    return 'Congrats, you are an admin'
-    
+def admin():
+    #setConfig('CLOSE_ELECTION','28/03/2013 12.47')
+    #return 'Congrats, you are an admin'
+    current_config = getConfigDict()
+    return render_template('admin.html',
+                           current_config=current_config)
+
+@app.route('/updateConfig', methods=['POST'])
+@admin_required
+def updateConfig():
+    #return request.form.get('START_ELECTION_date')+' '+request.form.get('START_ELECTION_time')
+    new_config = {}
+    new_config['TITLE'] = request.form.get('TITLE')
+    new_config['OPTIONS'] = [i.lstrip() for i in request.form.get('OPTIONS').split(',')]
+    new_config['START_ELECTION'] = time.strptime(request.form.get('START_ELECTION_date')+' '+request.form.get('START_ELECTION_time'), '%Y-%m-%d %H:%M')
+    new_config['CLOSE_ELECTION'] = time.strptime(request.form.get('CLOSE_ELECTION_date')+' '+request.form.get('CLOSE_ELECTION_time'), '%Y-%m-%d %H:%M')
+    new_config['VIEW_RESULTS'] = time.strptime(request.form.get('VIEW_RESULTS_date')+' '+request.form.get('VIEW_RESULTS_time'), '%Y-%m-%d %H:%M')
+    current_config = getConfigDict()
+    for key in new_config:
+        if new_config[key] != current_config[key]:
+            if key in ['OPTIONS']:
+                # So that I can check immediately if the candidates have changed
+                try:
+                    del session['candidates']
+                except KeyError:
+                    pass
+                flash(('You changed the candidates so you probably want to reset the databases'), 'error')
+            setConfig(key,new_config[key])
+    return redirect(url_for('admin'))
+    #return time.strftime('%d %B %Y at %H.%M',new_config['START_ELECTION'])
+
+@app.route('/resetDatabases', methods=['POST'])
+@admin_required
+def resetDatabases():
+    manageDB.resetDB(authors_file=getConfig('AUTHORS_LIST'))
+    flash(('Databases correcly reset'), 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/resetConfiguration', methods=['POST'])
+@admin_required
+def resetDefaultConfiguration():
+    old_config = getConfigDict()
+    upConfig()
+    flash(('Default configuration correcly reset'), 'success')
+    new_config = getConfigDict()
+    if old_config['OPTIONS'] != new_config['OPTIONS']:
+        flash(('You changed the candidates so you probably want to reset the databases'), 'error')
+    return redirect(url_for('admin'))
+
+ 
 
 
 if __name__ == '__main__':

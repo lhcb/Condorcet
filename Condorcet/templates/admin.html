@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>Admin page</h1>
+
+
+<form action="{{ url_for('updateConfig') }}" method="POST">
+Title:  <input type="text" name="TITLE" value="{{current_config['TITLE']}}">
+<br>
+Candidates:  <input type="text" name="OPTIONS" value = {{','.join(current_config['OPTIONS'])}} >
+<br>
+Start election:  <input type="date" name="START_ELECTION_date" 
+value
+={{current_config['START_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mday)}}
+>
+<input
+type="time" name="START_ELECTION_time" value={{current_config['START_ELECTION'].tm_hour}}:{{current_config['START_ELECTION'].tm_min}} >
+<br>
+End election:  <input type="date" name="CLOSE_ELECTION_date" 
+value
+={{current_config['CLOSE_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mday)}}
+>
+<input
+type="time" name="CLOSE_ELECTION_time" value={{current_config['CLOSE_ELECTION'].tm_hour}}:{{current_config['CLOSE_ELECTION'].tm_min}} >
+<br>
+Start viewing results:  <input type="date" name="VIEW_RESULTS_date" 
+value ={{current_config['VIEW_RESULTS'].tm_year}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mon)}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mday)}} >
+<input
+type="time" name="VIEW_RESULTS_time" value={{current_config['VIEW_RESULTS'].tm_hour}}:{{current_config['VIEW_RESULTS'].tm_min}} >
+
+   
+<input type="submit" value="Update Configuration">
+</form>
+
+<form action="{{ url_for('resetDatabases') }}" method="POST">
+<input type="submit" value="Reset databases">
+</form>
+
+<form action="{{ url_for('resetDefaultConfiguration') }}" method="POST">
+<input type="submit" value="Reset default configuration">
+</form>
+
+{% endblock %}
+
