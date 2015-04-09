@@ -156,4 +156,4 @@ if __name__ == '__main__':
     if args.init:
         initDB(default_authors_file)
     if args.p:
-        readDB(default_authors_file)
+        readDB()
