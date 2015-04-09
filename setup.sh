@@ -7,6 +7,8 @@ pip install -r requirements.txt
 wget https://pypi.python.org/packages/2.6/f/flup/flup-1.0.2-py2.6.egg
 chmod 755 Condorcet/manageDB.py
 Condorcet/manageDB.py --init
+chmod 755 Condorcet/updateConfig.py
+Condorcet/updateConfig.py --reset
 fs setacl -dir Condorcet/databases -acl webserver:afs diklwr
 chmod +x cgi-bin/condorcet.fcgi
 

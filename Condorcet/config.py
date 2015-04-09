@@ -29,10 +29,12 @@ CLOSE_ELECTION = '28/03/2029 12.47'
 VIEW_RESULTS = '28/03/2014 12.24'
 
 
+# Name of the folder to contain the databases, authorlist and list admins
+DB_DIR = os.path.join(this_files_dir, 'databases')
+
 # xml file with author list, can be downloaded form:
 # https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php
-# write only the file name and place the file in the same folder as this config
-# file
+# write only the file name and place the file in the same folder DB_DIR
 AUTHORS_LIST = 'LHCb_Authorship_flat_28-Mar-2015.xml'
 
 ###############################################################################
@@ -54,17 +56,19 @@ APPLICATION_ROOT = '/' if DEBUG else '/gdujany/Condorcet'
 SECRET_KEY = 'cH\xc5\xd9\xd2\xc4,^\x8c\x9f3S\x94Y\xe5\xc7!\x06>A'
 
 # SQLite3 database paths
-# Name of the folder to contain the databases
-DB_DIR = os.path.join(this_files_dir, 'databases')
+
+# Name of the database with the configurations changeable from the admin page
+CONFIG_DB = 'config.db'
 # Name of the database file to hold votes
 VOTES_DB = 'votes.db'
 # Name the database file to hold list of voters who have voted
 VOTERS_DB = 'voters.db'
-SQLALCHEMY_DATABASE_URI = r'sqlite:///{0}/{1}'.format(DB_DIR, VOTES_DB)
+SQLALCHEMY_DATABASE_URI = r'sqlite:///{0}/{1}'.format(DB_DIR, CONFIG_DB)
 SQLALCHEMY_BINDS = {
+    'votes': r'sqlite:///{0}/{1}'.format(DB_DIR, VOTES_DB),
     'voters': r'sqlite:///{0}/{1}'.format(DB_DIR, VOTERS_DB),
 }
 
 # Build the full path to the authors list, should be in the same dir as this
 # config file
-AUTHORS_LIST = os.path.join(this_files_dir, AUTHORS_LIST)
+AUTHORS_LIST = os.path.join(DB_DIR, AUTHORS_LIST)
