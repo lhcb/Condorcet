@@ -117,7 +117,7 @@ def publish_results(f):
         if time.localtime() < getConfig('VIEW_RESULTS'):
             results = time.strftime(
                 '%d %B %Y at %H.%M',
-                getConfig('START_ELECTION')
+                getConfig('VIEW_RESULTS')
             )
             message = 'The results will be availabe on ' + results
             if session['user']['admin']:
