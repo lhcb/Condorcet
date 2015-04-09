@@ -31,6 +31,7 @@ db = SQLAlchemy(app)
 
 
 class Votes(db.Model):
+    __bind_key__ = 'votes'
     secret_key = db.Column(db.String(8), unique=True, primary_key=True)
     vote = db.Column(db.String(15), unique=False)
 
