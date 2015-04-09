@@ -29,10 +29,10 @@ import elections
 
 alphabet = string.lowercase
 name2letter = dict([
-    (key, val) for key, val in zip(app.config['OPTIONS'], alphabet)
+    (key, val) for key, val in zip(getConfig('OPTIONS'), alphabet)
 ])
 letter2name = dict([
-    (key, val) for key, val in zip(alphabet, app.config['OPTIONS'])
+    (key, val) for key, val in zip(alphabet, getConfig('OPTIONS'))
 ])
 
 
@@ -147,11 +147,11 @@ def root():
     try:
         session['candidates']
     except KeyError:
-        choices_copy = app.config['OPTIONS'][:]
+        choices_copy = getConfig('OPTIONS')[:]
         random.shuffle(choices_copy)
         session['candidates'] = choices_copy
     return render_template('poll.html',
-                           title=app.config['TITLE'],
+                           title=getConfig('TITLE'),
                            fields=session['candidates'])
 
 
@@ -160,7 +160,7 @@ def root():
 @author_required
 def confirmVote():
     order = []
-    choices = app.config['OPTIONS']
+    choices = getConfig('OPTIONS')
     if len(request.form) == len(choices):
         for num in [str(i) for i in range(1, len(choices) + 1)]:
             order.append(request.form.get(num))
@@ -198,7 +198,7 @@ def savePoll():
 def result():
     # Prepare page with results
     preferences = manageDB.getPreferences()
-    choices = app.config['OPTIONS']
+    choices = getConfig('OPTIONS')
     winners = getListChoice(
         elections.getWinner(
             preferences,
