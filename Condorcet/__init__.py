@@ -28,19 +28,14 @@ from updateConfig import getConfig, setConfig, getConfigDict, upConfig
 import elections
 
 alphabet = string.lowercase
-name2letter = dict([
-    (key, val) for key, val in zip(getConfig('OPTIONS'), alphabet)
-])
-letter2name = dict([
-    (key, val) for key, val in zip(alphabet, getConfig('OPTIONS'))
-])
-
 
 def getStrOrder(choice_made):
+    name2letter = dict([(key, val) for key, val in zip(getConfig('OPTIONS'), alphabet)])
     return ''.join([name2letter[choice] for choice in choice_made])
 
 
 def getListChoice(vote):
+    letter2name = dict([(key, val) for key, val in zip(alphabet, getConfig('OPTIONS'))])
     return [letter2name[letter] for letter in vote]
 
 
