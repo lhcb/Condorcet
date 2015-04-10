@@ -37,7 +37,8 @@ DB_DIR = os.path.join(this_files_dir, 'databases')
 # write only the file name and place the file in the same folder DB_DIR
 AUTHORS_LIST = 'LHCb_Authorship_flat_28-Mar-2015.xml'
 
-# list of admins of the website, simple text file with full names of admins as they appear in AUTHOR_LIST
+# list of admins of the website, simple text file with full names of admins
+# as they appear in AUTHOR_LIST
 # N.B. for now names are case sensitive and are "Firsname Lastname"
 # write only the file name and place the file in the same folder DB_DIR
 ADMINS_LIST = 'admins.txt'
@@ -74,6 +75,7 @@ SQLALCHEMY_BINDS = {
     'voters': r'sqlite:///{0}/{1}'.format(DB_DIR, VOTERS_DB),
 }
 
-# Build the full path to the authors list and admins list, should be in the same dir as databases
+# Build the full path to the authors list and admins list,
+# should be in the same dir as databases
 AUTHORS_LIST = os.path.join(DB_DIR, AUTHORS_LIST)
 ADMINS_LIST = os.path.join(DB_DIR, ADMINS_LIST)

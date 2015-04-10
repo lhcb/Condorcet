@@ -29,13 +29,18 @@ import elections
 
 alphabet = string.lowercase
 
+
 def getStrOrder(choice_made):
-    name2letter = dict([(key, val) for key, val in zip(getConfig('OPTIONS'), alphabet)])
+    name2letter = dict(
+        [(key, val) for key, val in zip(getConfig('OPTIONS'), alphabet)]
+        )
     return ''.join([name2letter[choice] for choice in choice_made])
 
 
 def getListChoice(vote):
-    letter2name = dict([(key, val) for key, val in zip(alphabet, getConfig('OPTIONS'))])
+    letter2name = dict(
+        [(key, val) for key, val in zip(alphabet, getConfig('OPTIONS'))]
+        )
     return [letter2name[letter] for letter in vote]
 
 
@@ -70,11 +75,13 @@ def author_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session['user']['admin']:
-            return 'You appear not to be an admin so you cannot access this content' #redirect(url_for('notAuthor'))
+            # TODO: put a nice page here
+            return 'You appear not to be an admin so you cannot access this content'  # noqa
         return f(*args, **kwargs)
     return decorated_function
 
@@ -123,11 +130,11 @@ def publish_results(f):
                         '%d %B %Y at %H.%M',
                         getConfig('CLOSE_ELECTION')
                         )
-                    message = 'The election is still on until '+close+' so even if you are an admin you must at least wait for the election to be closed, the results will be pubblically availabe on ' + results
-            
+                    message = 'The election is still on until '+close+' so even if you are an admin you must at least wait for the election to be closed, the results will be pubblically availabe on ' + results  # noqa
+
             return render_template('notCorrectDate.html',
-                                       title='Too early to see the results',
-                                       message=message)
+                                   title='Too early to see the results',
+                                   message=message)
         return f(*args, **kwargs)
     return decorated_function
 
@@ -221,35 +228,33 @@ def notAuthor():
 @app.route('/admin')
 @admin_required
 def admin():
-    #setConfig('CLOSE_ELECTION','28/03/2013 12.47')
-    #return 'Congrats, you are an admin'
     current_config = getConfigDict()
     return render_template('admin.html',
                            current_config=current_config)
 
+
 @app.route('/updateConfig', methods=['POST'])
 @admin_required
 def updateConfig():
-    #return request.form.get('START_ELECTION_date')+' '+request.form.get('START_ELECTION_time')
     new_config = {}
     new_config['TITLE'] = request.form.get('TITLE')
-    new_config['OPTIONS'] = [i.lstrip() for i in request.form.get('OPTIONS').split(',')]
-    new_config['START_ELECTION'] = time.strptime(request.form.get('START_ELECTION_date')+' '+request.form.get('START_ELECTION_time'), '%Y-%m-%d %H:%M')
-    new_config['CLOSE_ELECTION'] = time.strptime(request.form.get('CLOSE_ELECTION_date')+' '+request.form.get('CLOSE_ELECTION_time'), '%Y-%m-%d %H:%M')
-    new_config['VIEW_RESULTS'] = time.strptime(request.form.get('VIEW_RESULTS_date')+' '+request.form.get('VIEW_RESULTS_time'), '%Y-%m-%d %H:%M')
+    new_config['OPTIONS'] = [i.lstrip() for i in request.form.get('OPTIONS').split(',')]  # noqa
+    new_config['START_ELECTION'] = time.strptime(request.form.get('START_ELECTION_date')+' '+request.form.get('START_ELECTION_time'), '%Y-%m-%d %H:%M')  # noqa
+    new_config['CLOSE_ELECTION'] = time.strptime(request.form.get('CLOSE_ELECTION_date')+' '+request.form.get('CLOSE_ELECTION_time'), '%Y-%m-%d %H:%M')  # noqa
+    new_config['VIEW_RESULTS'] = time.strptime(request.form.get('VIEW_RESULTS_date')+' '+request.form.get('VIEW_RESULTS_time'), '%Y-%m-%d %H:%M')  # noqa
     current_config = getConfigDict()
     for key in new_config:
         if new_config[key] != current_config[key]:
             if key in ['OPTIONS']:
-                # So that I can check immediately if the candidates have changed
+                # So that I can check immediately if the candidates have changed  # noqa
                 try:
                     del session['candidates']
                 except KeyError:
                     pass
-                flash(('You changed the candidates so you probably want to reset the databases'), 'error')
-            setConfig(key,new_config[key])
+                flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
+            setConfig(key, new_config[key])
     return redirect(url_for('admin'))
-    #return time.strftime('%d %B %Y at %H.%M',new_config['START_ELECTION'])
+
 
 @app.route('/resetDatabases', methods=['POST'])
 @admin_required
@@ -257,6 +262,7 @@ def resetDatabases():
     manageDB.resetDB(authors_file=getConfig('AUTHORS_LIST'))
     flash(('Databases correcly reset'), 'success')
     return redirect(url_for('admin'))
+
 
 @app.route('/resetConfiguration', methods=['POST'])
 @admin_required
@@ -266,10 +272,8 @@ def resetDefaultConfiguration():
     flash(('Default configuration correcly reset'), 'success')
     new_config = getConfigDict()
     if old_config['OPTIONS'] != new_config['OPTIONS']:
-        flash(('You changed the candidates so you probably want to reset the databases'), 'error')
+        flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))
-
- 
 
 
 if __name__ == '__main__':

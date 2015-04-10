@@ -17,10 +17,11 @@ if __name__ == '__main__':
                         action='store_true')
     args = parser.parse_args()
 
-import os,sys
+import os
+import sys
 import random
 import string
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))  # noqa
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -135,6 +136,7 @@ def getPreferences():
     '''List of votes'''
     return [i.vote for i in Votes.query.all()]
 
+
 def rmDB():
     votes_file = os.path.join(app.config['DB_DIR'],
                               app.config['VOTES_DB'])
@@ -144,9 +146,10 @@ def rmDB():
         if os.path.exists(db_file):
             os.remove(db_file)
 
+
 def resetDB(authors_file=default_authors_file):
-     rmDB()
-     initDB(authors_file)
+    rmDB()
+    initDB(authors_file)
 
 if __name__ == '__main__':
     if args.rm:
