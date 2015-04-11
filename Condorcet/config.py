@@ -74,8 +74,3 @@ SQLALCHEMY_BINDS = {
     'votes': r'sqlite:///{0}/{1}'.format(DB_DIR, VOTES_DB),
     'voters': r'sqlite:///{0}/{1}'.format(DB_DIR, VOTERS_DB),
 }
-
-# Build the full path to the authors list and admins list,
-# should be in the same dir as databases
-AUTHORS_LIST = os.path.join(DB_DIR, AUTHORS_LIST)
-ADMINS_LIST = os.path.join(DB_DIR, ADMINS_LIST)
