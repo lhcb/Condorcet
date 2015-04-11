@@ -80,14 +80,14 @@ def populateTables(authors_file):
     db.session.commit()
 
 
-def initDB(authors_file=None,dbdir=app.config['DB_DIR']):
+def initDB(authors_file=None, dbdir=app.config['DB_DIR']):
     """Create voters and votes databases at database_folder.
 
     The authors_file is used to populate the database.
     """
     if authors_file is None:
         authors_file = default_authors_file()
-    if app.config['VOTERS_DB'] in os.listdir(dbdir) or app.config['VOTES_DB'] in os.listdir(dbdir):
+    if (app.config['VOTERS_DB'] in os.listdir(dbdir) or app.config['VOTES_DB'] in os.listdir(dbdir)):  # noqa
         raise IOError(
             'Database already there, use --reset option to recreate'
         )
@@ -141,21 +141,21 @@ def getPreferences():
     return [i.vote for i in Votes.query.all()]
 
 
-def rmDB():
-    votes_file = os.path.join(app.config['DB_DIR'],
+def rmDB(dbdir=app.config['DB_DIR']):
+    votes_file = os.path.join(dbdir,
                               app.config['VOTES_DB'])
-    voters_file = os.path.join(app.config['DB_DIR'],
+    voters_file = os.path.join(dbdir,
                                app.config['VOTERS_DB'])
     for db_file in [votes_file, voters_file]:
         if os.path.exists(db_file):
             os.remove(db_file)
 
 
-def resetDB(authors_file=None):
+def resetDB(authors_file=None, dbdir=app.config['DB_DIR']):
     if authors_file is None:
         authors_file = default_authors_file()
-    rmDB()
-    initDB(authors_file)
+    rmDB(dbdir)
+    initDB(authors_file, dbdir)
 
 if __name__ == '__main__':
     if args.rm:

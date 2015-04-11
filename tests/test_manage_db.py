@@ -22,15 +22,14 @@ class TestManageDB(unittest2.TestCase):
     def setUpClass(cls):
         cls.db_path = tempfile.mkdtemp()
         config = {
-            'SQLALCHEMY_DATABASE_URI': r'sqlite:////{0}/{1}'.format(
-                cls.db_path, app.config['VOTES_DB']
-            ),
-            'SQLALCHEMY_BINDS': {
-                'voters': r'sqlite:////{0}/{1}'.format(
-                    cls.db_path, app.config['VOTERS_DB']
-                )
+            'SQLALCHEMY_BINDS': {'votes': r'sqlite:////{0}/{1}'.
+                                 format(cls.db_path, app.config['VOTES_DB']
+                                        ),
+                                 'voters': r'sqlite:////{0}/{1}'.
+                                 format(cls.db_path, app.config['VOTERS_DB']
+                                        )
+                                 }
             }
-        }
         app.config.update(config)
         TestVerifyAuthors.setUpClass()
         manageDB.initDB(TestVerifyAuthors.author_list_path, cls.db_path)
@@ -59,13 +58,17 @@ class TestManageDB(unittest2.TestCase):
 
     def test_init_db(self):
         """Should create two new database files, for votes and for voters."""
+        # deleate the db if presents ?
+        # TODO: check how it is possible
+        manageDB.rmDB(self.db_path)
+
         # The two database files should not exist at this point
         votes_path = os.path.join(self.db_path, app.config['VOTES_DB'])
         voters_path = os.path.join(self.db_path, app.config['VOTERS_DB'])
-        # self.assertFalse(os.path.isfile(votes_path))
-        # self.assertFalse(os.path.isfile(voters_path))
+        self.assertFalse(os.path.isfile(votes_path))
+        self.assertFalse(os.path.isfile(voters_path))
 
-        # manageDB.initDB(self.db_path, TestVerifyAuthors.author_list_path)
+        manageDB.initDB(TestVerifyAuthors.author_list_path, self.db_path)
 
         # The two database files should now exist
         self.assertTrue(os.path.isfile(votes_path))
