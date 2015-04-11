@@ -101,11 +101,11 @@ class TestConfig(unittest2.TestCase):
 
     def test_authors_list_validity(self):
         """AUTHORS_LIST should point to a valid XML file."""
-        self.assertTrue(os.path.isfile(config.AUTHORS_LIST))
+        self.assertTrue(os.path.isfile(os.path.join(config.DB_DIR, config.AUTHORS_LIST)))
         try:
-            xml.etree.ElementTree.parse(config.AUTHORS_LIST)
+            xml.etree.ElementTree.parse(os.path.join(config.DB_DIR, config.AUTHORS_LIST))
         except xml.etree.ElementTree.ParseError:
-            self.fail('Could not parse XML at {0}'.format(config.AUTHORS_LIST))
+            self.fail('Could not parse XML at {0}'.format(os.path.join(config.DB_DIR, config.AUTHORS_LIST)))
 
     def test_debug_validity(self):
         """DEBUG should be a boolean"""

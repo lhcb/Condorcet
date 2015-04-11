@@ -80,22 +80,21 @@ def populateTables(authors_file):
     db.session.commit()
 
 
-def initDB(authors_file=None):
+def initDB(authors_file=None,dbdir=app.config['DB_DIR']):
     """Create voters and votes databases at database_folder.
 
     The authors_file is used to populate the database.
     """
     if authors_file is None:
         authors_file = default_authors_file()
-    dbdir = os.listdir(app.config['DB_DIR'])
-    if app.config['VOTERS_DB'] in dbdir or app.config['VOTES_DB'] in dbdir:
+    if app.config['VOTERS_DB'] in os.listdir(dbdir) or app.config['VOTES_DB'] in os.listdir(dbdir):
         raise IOError(
             'Database already there, use --reset option to recreate'
         )
     db.create_all()
     populateTables(authors_file)
-    os.chmod(os.path.join(app.config['DB_DIR'], app.config['VOTES_DB']), 0666)
-    os.chmod(os.path.join(app.config['DB_DIR'], app.config['VOTERS_DB']), 0666)
+    os.chmod(os.path.join(dbdir, app.config['VOTES_DB']), 0666)
+    os.chmod(os.path.join(dbdir, app.config['VOTERS_DB']), 0666)
 
 
 def isInDB(fullname):
