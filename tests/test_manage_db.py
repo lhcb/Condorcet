@@ -33,7 +33,7 @@ class TestManageDB(unittest2.TestCase):
         }
         app.config.update(config)
         TestVerifyAuthors.setUpClass()
-        manageDB.initDB(cls.db_path, TestVerifyAuthors.author_list_path)
+        manageDB.initDB(TestVerifyAuthors.author_list_path, cls.db_path)
 
     @classmethod
     def tearDownClass(cls):
