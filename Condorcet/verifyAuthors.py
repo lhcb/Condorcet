@@ -1,12 +1,18 @@
 import xml.etree.ElementTree
-
-from config import AUTHORS_LIST, ADMINS_LIST
-
-default_authors_file = AUTHORS_LIST
-default_admins_file = ADMINS_LIST
+import os
+from Condorcet import app
+from Condorcet.updateConfig import getConfig
 
 
-def listAuthors(authors_file=default_authors_file):
+def default_authors_file():
+    return os.path.join(app.config['DB_DIR'], getConfig('AUTHORS_LIST'))
+
+
+def default_admins_file():
+    return os.path.join(app.config['DB_DIR'], getConfig('ADMINS_LIST'))
+
+
+def listAuthors(authors_file=default_authors_file()):
     """Return the list of authors as full names.
 
     Authors are in root[4], the given name is root[4][i][0].text and surname
@@ -17,9 +23,13 @@ def listAuthors(authors_file=default_authors_file):
     return [' '.join([child[0].text, child[1].text]) for child in root[4]]
 
 
-def isAuthor(fullname, authors_file=default_authors_file):
+def isAuthor(fullname, authors_file=None):
+    if authors_file is None:
+        authors_file = default_authors_file()
     return fullname in listAuthors(authors_file=authors_file)
 
 
-def isAdmin(fullname, admins_file=default_admins_file):
+def isAdmin(fullname, admins_file=None):
+    if admins_file is None:
+        admins_file = default_admins_file()
     return fullname+'\n' in open(admins_file).readlines()
