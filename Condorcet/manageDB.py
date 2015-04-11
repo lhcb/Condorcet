@@ -28,7 +28,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
 from Condorcet.updateConfig import getConfig
 from verifyAuthors import listAuthors
-default_authors_file = getConfig('AUTHORS_LIST')
+
+
+def default_authors_file():
+    return os.path.join(app.config['DB_DIR'], getConfig('AUTHORS_LIST'))
 
 db = SQLAlchemy(app)
 
@@ -77,11 +80,13 @@ def populateTables(authors_file):
     db.session.commit()
 
 
-def initDB(authors_file=default_authors_file):
+def initDB(authors_file=None):
     """Create voters and votes databases at database_folder.
 
     The authors_file is used to populate the database.
     """
+    if authors_file is None:
+        authors_file = default_authors_file()
     dbdir = os.listdir(app.config['DB_DIR'])
     if app.config['VOTERS_DB'] in dbdir or app.config['VOTES_DB'] in dbdir:
         raise IOError(
@@ -147,7 +152,9 @@ def rmDB():
             os.remove(db_file)
 
 
-def resetDB(authors_file=default_authors_file):
+def resetDB(authors_file=None):
+    if authors_file is None:
+        authors_file = default_authors_file()
     rmDB()
     initDB(authors_file)
 
@@ -155,8 +162,8 @@ if __name__ == '__main__':
     if args.rm:
         rmDB()
     if args.reset:
-        resetDB(default_authors_file)
+        resetDB(default_authors_file())
     if args.init:
-        initDB(default_authors_file)
+        initDB(default_authors_file())
     if args.p:
         readDB()

@@ -5,7 +5,8 @@ from flask import (
     redirect,
     session,
     flash,
-    url_for
+    url_for,
+    send_from_directory,
 )
 from functools import wraps
 import os
@@ -259,7 +260,8 @@ def updateConfig():
 @app.route('/resetDatabases', methods=['POST'])
 @admin_required
 def resetDatabases():
-    manageDB.resetDB(authors_file=getConfig('AUTHORS_LIST'))
+    manageDB.resetDB(authors_file=os.path.join(app.config['DB_DIR'],
+                                               getConfig('AUTHORS_LIST')))
     flash(('Databases correcly reset'), 'success')
     return redirect(url_for('admin'))
 
@@ -273,6 +275,30 @@ def resetDefaultConfiguration():
     new_config = getConfigDict()
     if old_config['OPTIONS'] != new_config['OPTIONS']:
         flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
+    if old_config['AUTHORS_LIST'] != new_config['AUTHORS_LIST']:
+        flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
+    return redirect(url_for('admin'))
+
+
+@app.route('/download/<filename>', methods=['GET', 'POST'])
+@admin_required
+def download(filename):
+    return send_from_directory(directory=app.config['DB_DIR'],
+                               filename=filename)
+
+
+@app.route('/uploadAuthorsList', methods=['GET', 'POST'])
+@admin_required
+def uploadAuthorsList():
+    inFile = request.files['filename']
+    inFile_name = inFile.filename
+    if not inFile_name:
+        flash(('No file updated'), 'error')
+    else:
+        inFile.save(os.path.join(app.config['DB_DIR'], inFile_name))
+        setConfig('AUTHORS_LIST', inFile_name)
+        flash(('New list of authors correcly uploaded'), 'success')
+        flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))
 
 
