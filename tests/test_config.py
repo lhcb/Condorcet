@@ -62,7 +62,9 @@ class TestConfig(unittest2.TestCase):
         self.assertIsInstance(time.strftime(config.DATE_FORMAT), str)
 
     def test_start_election_validity(self):
-        """"START_ELECTION should be parseable by time.strptime."""
+        """"
+        START_ELECTION should be parseable by time.strptime.
+        """
         self.assertIsInstance(config.START_ELECTION, str)
         self.assertGreater(len(config.START_ELECTION), 0)
         self.assertIsInstance(
@@ -96,11 +98,16 @@ class TestConfig(unittest2.TestCase):
 
     def test_authors_list_validity(self):
         """AUTHORS_LIST should point to a valid XML file."""
-        self.assertTrue(os.path.isfile(os.path.join(config.DB_DIR, config.AUTHORS_LIST)))
+        self.assertTrue(
+            os.path.isfile(os.path.join(config.DB_DIR, config.AUTHORS_LIST))
+            )
         try:
-            xml.etree.ElementTree.parse(os.path.join(config.DB_DIR, config.AUTHORS_LIST))
+            xml.etree.ElementTree.parse(
+                os.path.join(config.DB_DIR, config.AUTHORS_LIST)
+                )
         except xml.etree.ElementTree.ParseError:
-            self.fail('Could not parse XML at {0}'.format(os.path.join(config.DB_DIR, config.AUTHORS_LIST)))
+            self.fail('Could not parse XML at {0}'.format(
+                os.path.join(config.DB_DIR, config.AUTHORS_LIST)))
 
     def test_debug_validity(self):
         """DEBUG should be a boolean"""
@@ -168,7 +175,7 @@ class TestConfig(unittest2.TestCase):
         prefix = 'sqlite://'
         self.assertTrue(config.SQLALCHEMY_DATABASE_URI.startswith(prefix))
         self.assertTrue(
-            config.SQLALCHEMY_DATABASE_URI.endswith(config.VOTES_DB)
+            config.SQLALCHEMY_DATABASE_URI.endswith(config.CONFIG_DB)
         )
 
     def test_sqlalchemy_binds_presence(self):
@@ -179,6 +186,10 @@ class TestConfig(unittest2.TestCase):
     def test_sqlalchemy_binds_validity(self):
         """The SQLALCHEMY_BINDS voters item must begin with 'sqlite://'."""
         prefix = 'sqlite://'
+        self.assertTrue(config.SQLALCHEMY_BINDS['votes'].startswith(prefix))
+        self.assertTrue(
+            config.SQLALCHEMY_BINDS['votes'].endswith(config.VOTES_DB)
+        )
         self.assertTrue(config.SQLALCHEMY_BINDS['voters'].startswith(prefix))
         self.assertTrue(
             config.SQLALCHEMY_BINDS['voters'].endswith(config.VOTERS_DB)
