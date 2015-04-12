@@ -32,25 +32,25 @@ class TestElections(unittest2.TestCase):
 
     def test_get_score_should_score_all_candidates(self):
         """All candidates should get a score."""
-        scores = elections.getScore(PREFERENCES, CANDIDATES)
+        scores = elections.getBordaScore(PREFERENCES, CANDIDATES)
         self.assertItemsEqual(scores.keys(), CANDIDATES)
         for candidate, score in scores.iteritems():
             self.assertGreater(score, 0)
 
     def test_get_score_correctly_scores_candidates(self):
         """All candidates should be scored correctly."""
-        scores = elections.getScore(PREFERENCES, CANDIDATES)
+        scores = elections.getBordaScore(PREFERENCES, CANDIDATES)
         self.assertDictEqual(scores, SCORES)
 
     def test_get_condorcet_winner_is_correct(self):
         """Winner should be the candidate with the highest score."""
-        winners = elections.getCondorcetWinner(PREFERENCES, CANDIDATES)
+        winners = elections.getBordaWinner(PREFERENCES, CANDIDATES)
         # b has the highest score in the dummy data, and so is the winner
         self.assertItemsEqual(['b'], winners)
 
     def test_get_condorcet_tie(self):
         """Winners can be candidates with identical scores."""
-        winners = elections.getCondorcetWinner(['abc', 'bac'], CANDIDATES)
+        winners = elections.getBordaWinner(['abc', 'bac'], CANDIDATES)
         self.assertItemsEqual(['a', 'b'], winners)
 
     def test_get_loosers_is_correct(self):
