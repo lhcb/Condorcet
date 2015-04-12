@@ -6,10 +6,12 @@ In all cases, preferences is a list of strings such as ['abc','cab',...], where
 is last.
 candidates is the list of possible candidates such as ['a', 'b', 'c'].
 """
-import random
 
 
-def getScore(preferences, candidates):
+# Borda Method
+
+
+def getBordaScore(preferences, candidates):
     """Return the election score for each candidate using the Borda method."""
     num_candidates = len(candidates)
     score = {}
@@ -21,14 +23,102 @@ def getScore(preferences, candidates):
     return score
 
 
-def getCondorcetWinner(preferences, candidates):
+def getBordaWinner(preferences, candidates):
     """Return the candidate with the highest Borda score.
 
     May return more than one winner.
     """
-    score = getScore(preferences, candidates)
+    score = getBordaScore(preferences, candidates)
     max_score = max(score.values())
     return [key for key in score if score[key] == max_score]
+
+######################################################################
+
+# Shulze method
+
+
+def pairwisePreferences(preferences, candidates):
+    '''
+    make matrix where PP[i][j] is the number of voters which prefears i over j
+    '''
+    # Initialize matrix with zeroes
+    PP = {}
+    for i in candidates:
+        PP[i] = {}
+        for j in candidates:
+            if i != j:
+                PP[i][j] = 0
+
+    # Fill matrix
+    for pref in preferences:
+        illfavoreds = candidates[:]
+        for cand in pref:
+            illfavoreds.remove(cand)
+            for worse in illfavoreds:
+                PP[cand][worse] += 1
+
+    return PP
+
+
+def strongestPathStrength(PP):
+    '''
+    make matrix where SPS[i][j] is the strength of the strongest path
+    which goes from i to j
+    '''
+    candidates = PP.keys()
+    SPS = {}
+    for i in candidates:
+        SPS[i] = {}
+        for j in candidates:
+            if i != j:
+                if PP[i][j] > PP[j][i]:
+                    SPS[i][j] = PP[i][j]
+                else:
+                    SPS[i][j] = 0
+
+    for i in candidates:
+        for j in candidates:
+            if i != j:
+                for k in candidates:
+                    if k not in (i, j):
+                        SPS[j][k] = max(SPS[j][k], min(SPS[j][i], SPS[i][k]))
+
+    return SPS
+
+
+def getShulzeScore(SPS):
+    '''
+    Return candidates ordered by preference, winner first
+    '''
+    candidates = SPS.keys()
+    score = {}
+    for i in candidates:
+        score[i] = 0
+        for j in candidates:
+            if i != j:
+                if SPS[i][j] > SPS[j][i]:
+                    score[i] += 1
+
+    return score
+
+
+def getShulzeWinner(preferences, candidates):
+    """
+    Return the winner with the Shulze method
+
+    May return more than one winner.
+    """
+    PP = pairwisePreferences(preferences, candidates)
+    SPS = strongestPathStrength(PP)
+    score = getShulzeScore(SPS)
+    max_score = max(score.values())
+    return [key for key in score if score[key] == max_score]
+
+
+######################################################################
+
+
+# LHCb method
 
 
 def getLoosers(preferences, candidates):
@@ -84,6 +174,11 @@ def getWinner(preferences, candidates):
                 preferences = deleteCandidate(looser, preferences)
     return candidates_copy
 
+######################################################################
+
+
+import random
+
 
 def inventPreferences(candidates, num_preferences):
     preferences = []
@@ -105,50 +200,69 @@ if __name__ == '__main__':
         13*['cba']
     )
 
-    score = getScore(preferences, candidates)
+    score = getBordaScore(preferences, candidates)
     print score
-    print 'Condorcet winners: ', getCondorcetWinner(preferences, candidates)
+    print 'Condorcet winners: ', getBordaWinner(preferences, candidates)
     print 'LHCb winners: ', getWinner(preferences, candidates)
 
+    # Monte Carlo
     candidates = ['a', 'b', 'c']
-    converge_C = 0
+    converge_B = 0
+    converge_S = 0
     converge_L = 0
     isEqual = 0
-    isDiff = 0
-    CL = 0
-    LC = 0
-    LLCC = 0
-    diffWinner = 0
+    diff_B = 0
+    diff_S = 0
+    diff_L = 0
+    diff_all = 0
+    # CL = 0
+    # LC = 0
+    # LLCC = 0
+    # diffWinner = 0
     interesting = []
-    for i in range(100):
+    for i in range(1000):
         preferences = inventPreferences(candidates, 1000)
         interesting.append(preferences)
-        condorcet = sorted(getCondorcetWinner(preferences, candidates))
+        borda = sorted(getBordaWinner(preferences, candidates))
+        shulze = sorted(getShulzeWinner(preferences, candidates))
         LHCb = sorted(getWinner(preferences, candidates))
-        print i, condorcet, LHCb
+        print i, borda, shulze, LHCb
 
-        if len(condorcet) == 1:
-            converge_C += 1
+        if len(borda) == 1:
+            converge_B += 1
+        if len(shulze) == 1:
+            converge_S += 1
         if len(LHCb) == 1:
             converge_L += 1
-        if condorcet == LHCb:
+        if borda == LHCb and borda == shulze:
             isEqual += 1
+        elif borda == LHCb:
+            diff_S += 1
+        elif shulze == LHCb:
+            diff_B += 1
+        elif borda == shulze:
+            diff_L += 1
         else:
-            isDiff += 1
-            if len(condorcet) > len(LHCb):
-                CL += 1
-            elif len(condorcet) < len(LHCb):
-                LC += 1
-            else:
-                if len(LHCb) == 1:
-                    diffWinner += 1
-                LLCC += 1
+            diff_all += 1
 
-    print 'Condorcet converges: ', converge_C
+        # if len(borda) > len(LHCb):
+        #     CL += 1
+        # elif len(borda) < len(LHCb):
+        #     LC += 1
+        # else:
+        #     if len(LHCb) == 1:
+        #         diffWinner += 1
+        #     LLCC += 1
+
+    print 'Borda converges: ', converge_B
+    print 'Shulze converges:      ', converge_S
     print 'LHCb converges:      ', converge_L
-    print 'Converge with different Results: ', diffWinner
     print 'Same result: ', isEqual
-    print 'Different result: ', isDiff
-    print 'Condorcet > LHCb: ', CL
-    print 'Condorcet < LHCb: ', LC
-    print 'Condorcet = LHCb: ', LLCC
+    print 'Different result Borda: ', diff_B
+    print 'Different result Shulze: ', diff_S
+    print 'Different result LHCb: ', diff_L
+    print 'All different results: ', diff_all
+    # print 'Converge with different Results: ', diffWinner
+    # print 'Borda > LHCb: ', CL
+    # print 'Borda < LHCb: ', LC
+    # print 'Borda = LHCb: ', LLCC
