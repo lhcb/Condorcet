@@ -48,6 +48,11 @@ class TestConfig(unittest2.TestCase):
             self.assertIsInstance(option, str)
             self.assertGreater(len(option), 0)
 
+    def test_options_uniqueness(self):
+        """All options must be unique, i.e. no duplicates in the list."""
+        unique = set(config.OPTIONS)
+        self.assertItemsEqual(unique, config.OPTIONS, 'Options not unique')
+
     def test_contact_validity(self):
         """CONTACT should be a valid email address."""
         self.assertIsInstance(config.CONTACT, str)
