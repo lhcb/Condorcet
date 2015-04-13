@@ -2,7 +2,8 @@ import mock
 import datetime
 import time
 import random
-import string
+import tempfile
+import shutil
 
 import flask
 from flask.ext.testing import TestCase
@@ -12,7 +13,6 @@ from Condorcet.config import APPLICATION_ROOT as ROOT
 from Condorcet import manageDB
 
 from tests.test_verify_authors import AUTHORS, TestVerifyAuthors
-from tests.test_manage_db import TestManageDB
 
 
 TEST_LOGIN = 'testuser'
@@ -45,11 +45,25 @@ def mocked_hasVoted(fullname):
 class TestApp(TestCase):
     @classmethod
     def setUpClass(cls):
-        TestManageDB.setUpClass()
+        cls.db_path = tempfile.mkdtemp()
+        config = {
+            'SQLALCHEMY_DATABASE_URI': r'sqlite:////{0}/{1}'.format(
+                cls.db_path, app.config['VOTES_DB']
+            ),
+            'SQLALCHEMY_BINDS': {
+                'voters': r'sqlite:////{0}/{1}'.format(
+                    cls.db_path, app.config['VOTERS_DB']
+                )
+            }
+        }
+        app.config.update(config)
+        TestVerifyAuthors.setUpClass()
+        manageDB.initDB(cls.db_path, TestVerifyAuthors.author_list_path)
 
     @classmethod
     def tearDownClass(cls):
-        TestManageDB.tearDownClass()
+        TestVerifyAuthors.tearDownClass()
+        shutil.rmtree(cls.db_path)
 
     def setUp(self):
         manageDB.db.drop_all()
