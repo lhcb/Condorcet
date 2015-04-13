@@ -211,18 +211,29 @@ if __name__ == '__main__':
     converge_S = 0
     converge_L = 0
     isEqual = 0
+<<<<<<< HEAD
     diff_B = [0]*3
     diff_S = [0]*3
     diff_L = [0]*3
     diff_all = [0]*4
 
+=======
+    diff_B = 0
+    diff_S = 0
+    diff_L = 0
+    diff_all = 0
+>>>>>>> 02d89b1ad0bd25e4a861d29bc7b0d6336f0d4a97
     # CL = 0
     # LC = 0
     # LLCC = 0
     # diffWinner = 0
     interesting = []
     for i in range(1000):
+<<<<<<< HEAD
         preferences = inventPreferences(candidates, 700)
+=======
+        preferences = inventPreferences(candidates, 1000)
+>>>>>>> 02d89b1ad0bd25e4a861d29bc7b0d6336f0d4a97
         interesting.append(preferences)
         borda = sorted(getBordaWinner(preferences, candidates))
         shulze = sorted(getShulzeWinner(preferences, candidates))
@@ -238,6 +249,7 @@ if __name__ == '__main__':
         if borda == LHCb and borda == shulze:
             isEqual += 1
         elif borda == LHCb:
+<<<<<<< HEAD
             if len(LHCb) == 1:
                 if len(shulze) > 1:
                     diff_S[0] += 1
@@ -265,6 +277,15 @@ if __name__ == '__main__':
             numConverged = len([i for i in [len(LHCb), len(borda), len(shulze)]
                                 if i == 1])
             diff_all[numConverged] += 1
+=======
+            diff_S += 1
+        elif shulze == LHCb:
+            diff_B += 1
+        elif borda == shulze:
+            diff_L += 1
+        else:
+            diff_all += 1
+>>>>>>> 02d89b1ad0bd25e4a861d29bc7b0d6336f0d4a97
 
         # if len(borda) > len(LHCb):
         #     CL += 1
@@ -276,6 +297,7 @@ if __name__ == '__main__':
         #     LLCC += 1
 
     print 'Borda converges: ', converge_B
+<<<<<<< HEAD
     print 'Shulze converges:', converge_S
     print 'LHCb converges:  ', converge_L
     print 'Same result:     ', isEqual
@@ -283,6 +305,15 @@ if __name__ == '__main__':
     print 'Different result Shulze: ', sum(diff_S), diff_S
     print 'Different result LHCb:   ', sum(diff_L), diff_L
     print 'All different results:   ', sum(diff_all), diff_all
+=======
+    print 'Shulze converges:      ', converge_S
+    print 'LHCb converges:      ', converge_L
+    print 'Same result: ', isEqual
+    print 'Different result Borda: ', diff_B
+    print 'Different result Shulze: ', diff_S
+    print 'Different result LHCb: ', diff_L
+    print 'All different results: ', diff_all
+>>>>>>> 02d89b1ad0bd25e4a861d29bc7b0d6336f0d4a97
     # print 'Converge with different Results: ', diffWinner
     # print 'Borda > LHCb: ', CL
     # print 'Borda < LHCb: ', LC
