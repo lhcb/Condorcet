@@ -215,7 +215,7 @@ if __name__ == '__main__':
     diff_S = [0]*3
     diff_L = [0]*3
     diff_all = [0]*4
-    
+
     # CL = 0
     # LC = 0
     # LLCC = 0
@@ -262,9 +262,10 @@ if __name__ == '__main__':
             else:
                 diff_L[1] += 1
         else:
-            numConverged = len([i for i in [len(LHCb), len(borda), len(shulze)] if i == 1])
+            numConverged = len([i for i in [len(LHCb), len(borda), len(shulze)]
+                                if i == 1])
             diff_all[numConverged] += 1
-           
+
         # if len(borda) > len(LHCb):
         #     CL += 1
         # elif len(borda) < len(LHCb):
