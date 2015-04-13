@@ -172,6 +172,8 @@ def confirmVote():
 @during_elections
 @author_required
 def savePoll():
+    if not session.get('vote'):
+        return redirect(url_for('root'))
     fullname = session['user']['fullname']
     if manageDB.isInDB(fullname):
         return render_template('alreadyVoted.html')
