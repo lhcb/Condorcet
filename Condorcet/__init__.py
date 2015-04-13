@@ -13,8 +13,10 @@ import sys
 import random
 import string
 import time
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..'))
+# Add this directory and the one above to PYTHONPATH
+this_files_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_files_dir)
+sys.path.append(os.path.join(this_files_dir, '..'))
 
 
 app = Flask(__name__)
@@ -22,15 +24,21 @@ app.config.from_object('Condorcet.config')
 
 # convert times in times-tuple
 for time_label in 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS':
-    app.config[time_label] = time.strptime(app.config[time_label],app.config['DATE_FORMAT'])
+    app.config[time_label] = time.strptime(
+        app.config[time_label], app.config['DATE_FORMAT']
+    )
 
 import manageDB
 from verifyAuthors import isAuthor
 import elections
 
 alphabet = string.lowercase
-name2letter = dict([(key, val) for key, val in zip(app.config['OPTIONS'], alphabet)])
-letter2name = dict([(key, val) for key, val in zip(alphabet, app.config['OPTIONS'])])
+name2letter = dict([
+    (key, val) for key, val in zip(app.config['OPTIONS'], alphabet)
+])
+letter2name = dict([
+    (key, val) for key, val in zip(alphabet, app.config['OPTIONS'])
+])
 
 
 def getStrOrder(choice_made):
@@ -57,11 +65,11 @@ def set_user():
         session['user'] = {
             'username': get_environ('ADFS_LOGIN'),
             'fullname': ' '.join([
-            get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
+                get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ])
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
-    
+
 
 def author_required(f):
     @wraps(f)
@@ -71,27 +79,46 @@ def author_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def during_elections(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if time.localtime() < app.config['START_ELECTION']:
+            # TODO factor out long string to view
+            start = time.strftime(
+                '%d %B %Y at %H.%M',
+                app.config['START_ELECTION']
+            )
+            message = 'The election will be begin on ' + start
             return render_template('notCorrectDate.html',
-                                   title = 'Too early to vote',
-                                   message='You are a bit too early to vote, we appreciate your enthusiasm but the election will be opening only on '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+                                   title='Too early to vote',
+                                   message=message)
         if time.localtime() > app.config['CLOSE_ELECTION']:
+            # TODO factor out long string to view
+            close = time.strftime(
+                '%d %B %Y at %H.%M',
+                app.config['CLOSE_ELECTION']
+            )
+            message = 'The closing date of the election was the ' + close
             return render_template('notCorrectDate.html',
-                                   title = 'Too late to vote',
-                                   message='I am sorry but the closing date of the election was the '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+                                   title='Too late to vote',
+                                   message=message)
         return f(*args, **kwargs)
     return decorated_function
+
 
 def publish_results(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if time.localtime() < app.config['VIEW_RESULTS']:
+            results = time.strftime(
+                '%d %B %Y at %H.%M',
+                app.config['START_ELECTION']
+            )
+            message = 'The results will be availabe on ' + results
             return render_template('notCorrectDate.html',
-                                   title = 'Too early to see the results',
-                                   message='I am sorry but the results are not available yet, visit again this page after the '+time.strftime('%d %B %Y at %H.%M',app.config['START_ELECTION'])) 
+                                   title='Too early to see the results',
+                                   message=message)
         return f(*args, **kwargs)
     return decorated_function
 
@@ -103,7 +130,8 @@ def root():
     fullname = session['user']['fullname']
     if manageDB.isInDB(fullname):
         return render_template('alreadyVoted.html')
-    try: session['candidates']
+    try:
+        session['candidates']
     except KeyError:
         choices_copy = app.config['OPTIONS'][:]
         random.shuffle(choices_copy)
@@ -144,6 +172,8 @@ def confirmVote():
 @during_elections
 @author_required
 def savePoll():
+    if not session.get('vote'):
+        return redirect(url_for('root'))
     fullname = session['user']['fullname']
     if manageDB.isInDB(fullname):
         return render_template('alreadyVoted.html')

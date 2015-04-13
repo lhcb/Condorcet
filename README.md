@@ -1,5 +1,4 @@
-Condorcet
-=========
+# Condorcet [![Build status](https://travis-ci.org/gdujany/Condorcet.svg?branch=master)](http://travis-ci.org/gdujany/Condorcet)
 
 Condorcet is a web application for voting.
 
