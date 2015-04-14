@@ -101,6 +101,12 @@ input[type=submit] {
   color: #daf2fc;
 }
 
+input.inline_button {
+width: 25%;
+height: 25px;
+font-size: 14px;
+}
+
 input[type=submit]:hover {
   background: #0068b5;
   color: #f1fbff;

@@ -10,24 +10,36 @@ value="{{current_config['TITLE']}}" size = 100>
 Candidates:  <input type="text" name="OPTIONS" value =
 {{','.join(current_config['OPTIONS'])}} size = 100>
 <br>
+<br>
 Start election:  <input type="date" name="START_ELECTION_date" 
 value
 ={{current_config['START_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mday)}}
 >
 <input
-type="time" name="START_ELECTION_time" value={{current_config['START_ELECTION'].tm_hour}}:{{current_config['START_ELECTION'].tm_min}} >
+type="time" name="START_ELECTION_time"
+value={{current_config['START_ELECTION'].tm_hour}}:{{current_config['START_ELECTION'].tm_min}}
+>
+<input type="submit" value="Set to now" formaction="{{
+url_for('setToNow',timeDate='START_ELECTION') }}" method="POST" class=inline_button >
 <br>
 End election:  <input type="date" name="CLOSE_ELECTION_date" 
 value
 ={{current_config['CLOSE_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mday)}}
 >
 <input
-type="time" name="CLOSE_ELECTION_time" value={{current_config['CLOSE_ELECTION'].tm_hour}}:{{current_config['CLOSE_ELECTION'].tm_min}} >
+type="time" name="CLOSE_ELECTION_time"
+value={{current_config['CLOSE_ELECTION'].tm_hour}}:{{current_config['CLOSE_ELECTION'].tm_min}}
+>
+<input type="submit" value="Set to now" formaction="{{
+url_for('setToNow',timeDate='CLOSE_ELECTION') }}" method="POST" class=inline_button >
 <br>
 Start viewing results:  <input type="date" name="VIEW_RESULTS_date" 
 value ={{current_config['VIEW_RESULTS'].tm_year}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mon)}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mday)}} >
 <input
 type="time" name="VIEW_RESULTS_time" value={{current_config['VIEW_RESULTS'].tm_hour}}:{{current_config['VIEW_RESULTS'].tm_min}} >
+<input type="submit" value="Set to now" formaction="{{
+url_for('setToNow',timeDate='VIEW_RESULTS') }}" method="POST" class=inline_button >
+<br>
 <br>
 
 <br>   

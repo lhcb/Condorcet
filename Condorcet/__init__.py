@@ -259,6 +259,15 @@ def updateConfig():
     return redirect(url_for('admin'))
 
 
+@app.route('/setToNow/<timeDate>', methods=['GET', 'POST'])
+@admin_required
+def setToNow(timeDate):
+    setConfig(timeDate,
+              time.localtime())
+    flash((timeDate+' set to now'), 'success')
+    return redirect(url_for('admin'))
+
+
 @app.route('/resetDatabases', methods=['POST'])
 @admin_required
 def resetDatabases():
