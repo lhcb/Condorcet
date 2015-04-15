@@ -236,9 +236,9 @@ def admin():
                            current_config=current_config)
 
 
-@app.route('/updateConfig', methods=['POST'])
+@app.route('/updateConfiguration', methods=['POST'])
 @admin_required
-def updateConfig():
+def updateConfiguration():
     new_config = {}
     new_config['TITLE'] = request.form.get('TITLE')
     new_config['OPTIONS'] = [i.lstrip() for i in request.form.get('OPTIONS').split(',')]  # noqa

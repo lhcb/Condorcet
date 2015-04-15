@@ -74,7 +74,8 @@ def populateTables(authors_file):
         newVoter = Voters(fullname)
         if Voters.query.filter_by(fullname=fullname).all():
             # raise KeyError(fullname+' appears twice in the authors list')
-            print fullname+' appears twice in the authors list'
+            # print fullname+' appears twice in the authors list'
+            print 'some authors appear twice in the authors list'
             continue
         db.session.add(newVoter)
     db.session.commit()
