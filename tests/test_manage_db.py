@@ -22,6 +22,7 @@ class TestManageDB(unittest2.TestCase):
     def setUpClass(cls):
         cls.db_path = tempfile.mkdtemp()
         config = {
+            #'SQLALCHEMY_DATABASE_URI' : r'sqlite:///{0}/{1}'.format(cls.db_path, app.config['CONFIG_DB']),
             'SQLALCHEMY_BINDS': {'votes': r'sqlite:////{0}/{1}'.
                                  format(cls.db_path, app.config['VOTES_DB']
                                         ),
@@ -41,8 +42,10 @@ class TestManageDB(unittest2.TestCase):
 
     def setUp(self):
         """Create a temporary database filled from the dummy author list."""
-        manageDB.db.drop_all()
-        manageDB.db.create_all()
+        manageDB.db.drop_all(bind='votes')
+        manageDB.db.create_all(bind='votes')
+        manageDB.db.drop_all(bind='voters')
+        manageDB.db.create_all(bind='voters')
         manageDB.populateTables(TestVerifyAuthors.author_list_path)
 
     def tearDown(self):

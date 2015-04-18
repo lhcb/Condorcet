@@ -92,7 +92,8 @@ def initDB(authors_file=None, dbdir=app.config['DB_DIR']):
         raise IOError(
             'Database already there, use --reset option to recreate'
         )
-    db.create_all()
+    db.create_all(bind='votes')
+    db.create_all(bind='voters')
     populateTables(authors_file)
     os.chmod(os.path.join(dbdir, app.config['VOTES_DB']), 0666)
     os.chmod(os.path.join(dbdir, app.config['VOTERS_DB']), 0666)

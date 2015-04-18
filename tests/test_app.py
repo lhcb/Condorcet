@@ -13,6 +13,9 @@ from Condorcet.config import APPLICATION_ROOT as ROOT
 from Condorcet import manageDB
 from Condorcet import updateConfig
 
+from flask.ext.sqlalchemy import SQLAlchemy
+
+
 from tests.test_verify_authors import AUTHORS, TestVerifyAuthors
 
 
@@ -46,8 +49,9 @@ def mocked_hasVoted(fullname):
 class TestApp(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.db_path = tempfile.mkdtemp()
+        cls.db_path = '/Users/gdujany/Documents/PhD/Varie/elections/Condorcet/tmp' #tempfile.mkdtemp()
         config = {
+            #'SQLALCHEMY_DATABASE_URI' : r'sqlite:///{0}/{1}'.format(cls.db_path, app.config['CONFIG_DB']),
             'SQLALCHEMY_BINDS': {'votes': r'sqlite:////{0}/{1}'.
                                  format(cls.db_path, app.config['VOTES_DB']
                                         ),
@@ -59,16 +63,36 @@ class TestApp(TestCase):
         app.config.update(config)
         TestVerifyAuthors.setUpClass()
         manageDB.initDB(TestVerifyAuthors.author_list_path, cls.db_path)
+        updateConfig.resetConfig()
+        #updateConfig.initConfig(dbdir=cls.db_path)
+        
 
     @classmethod
     def tearDownClass(cls):
         TestVerifyAuthors.tearDownClass()
-        shutil.rmtree(cls.db_path)
+        #shutil.rmtree(cls.db_path)
 
     def setUp(self):
-        manageDB.db.drop_all()
-        manageDB.db.create_all()
+        manageDB.db.drop_all(bind='votes')
+        manageDB.db.drop_all(bind='voters')
+        # # manageDB.db.drop_all(bind=None)
+        # updateConfig.db.drop_all(bind=None)
+        # #manageDB.db.drop_all()
+        # #manageDB.db.create_all()
+        manageDB.db.create_all(bind='votes')
+        manageDB.db.create_all(bind='voters')
+        # # manageDB.db.create_all(bind=None)
+        # updateConfig.db.create_all(bind=None)
+        #db = SQLAlchemy(app)
+        #db.drop_all()
+        #db.create_all()
+        #raise IOError(str(db.get_binds()))
         manageDB.populateTables(TestVerifyAuthors.author_list_path)
+        #raise IOError(str(dir(manageDB.db)))
+        #raise IOError(str(updateConfig.db.get_binds())+str(manageDB.db.get_binds()))
+        #raise IOError(str(db.get_binds()))
+        # updateConfig.Config.query.filter_by(KEY='default').all()
+        # updateConfig.upConfig()
 
         # Make sure the tests run during valid election times
         newstart = datetime.datetime.now() + datetime.timedelta(hours=-1)

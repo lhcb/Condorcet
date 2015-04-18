@@ -104,16 +104,29 @@ def setConfig(field, value, KEY='default'):
     db.session.commit()
 
 
-def resetConfig(KEY='default', config_file=default_config_file):
+def initConfig(KEY='default', config_file=default_config_file, dbdir=app.config['DB_DIR']):
     """
     Create a new database for Config, removing the old and call updateConfig
     """
-    config_db = os.path.join(app.config['DB_DIR'],
+    config_db = os.path.join(dbdir,
+                             app.config['CONFIG_DB'])
+    if os.path.exists(config_db):
+        raise IOError(
+            'Database already there, use function resetConfig to recreate'
+        )
+    db.create_all(bind=None)
+    os.chmod(os.path.join(dbdir, config_db), 0666)
+      
+
+def resetConfig(KEY='default', config_file=default_config_file, dbdir=app.config['DB_DIR']):
+    """
+    Create a new database for Config, removing the old and call updateConfig
+    """
+    config_db = os.path.join(dbdir,
                              app.config['CONFIG_DB'])
     if os.path.exists(config_db):
         os.remove(config_db)
-    db.create_all(bind=None)
-    os.chmod(os.path.join(app.config['DB_DIR'], config_db), 0666)
+    initConfig(KEY, config_file, dbdir)
     upConfig(KEY, config_file)
 
 
@@ -129,14 +142,7 @@ def upConfig(KEY='default', config_file=default_config_file):
     _fields.insert(0, 'KEY')
     KEY = default_key
     OPTIONS = ','.join(locals()['OPTIONS'])
-    config_file = os.path.join(app.config['DB_DIR'],
-                               app.config['CONFIG_DB'])
-
     newConfig = Config(**dict([(field, locals()[field]) for field in _fields]))
-    # if Config.query.filter_by(KEY=KEY).all():
-    #     print 'Qui'
-    #     Config.query.filter_by(KEY=KEY).delete()
-    # db.session.add(newConfig)
     if Config.query.filter_by(KEY=KEY).all():
         for field in _fields:
             exec 'Config.query.filter_by(KEY=KEY).first().'+field+' = '+field
