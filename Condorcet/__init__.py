@@ -55,7 +55,7 @@ def set_user():
     if app.config['DEBUG']:
         session['user'] = {
             'username': 'gdujany',
-            'fullname': 'Giulio Dujany'
+            'fullname': 'Giulio Dujany',
             'admin' : True
         }
     else:
@@ -64,7 +64,7 @@ def set_user():
             'fullname': ' '.join([
                 get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ]),
-            'admin' : 'lhcb-condorcet-voting' in get_environ['ADFS_GROUP']
+            'admin' : 'lhcb-condorcet-voting' in get_environ('ADFS_GROUP')
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
 
