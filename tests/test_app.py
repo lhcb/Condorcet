@@ -22,13 +22,15 @@ TEST_FIRSTNAME, TEST_LASTNAME = TEST_FULLNAME.split(' ')
 TEST_ENVIRON = {
     'ADFS_LOGIN': TEST_LOGIN,
     'ADFS_FIRSTNAME': TEST_FIRSTNAME,
-    'ADFS_LASTNAME': TEST_LASTNAME
+    'ADFS_LASTNAME': TEST_LASTNAME,
+    'ADFS_GROUP': 'lhcb-condorcet-voting;blabla'
 }
 # This user should not be validated as an author
 TEST_ENVIRON_NOT_AUTHOR = {
     'ADFS_LOGIN': 'foobar',
     'ADFS_FIRSTNAME': 'Foo',
-    'ADFS_LASTNAME': 'Bar'
+    'ADFS_LASTNAME': 'Bar',
+    'ADFS_GROUP': 'lhcb-pollo-alle-mandorle;blabla'
 }
 
 
