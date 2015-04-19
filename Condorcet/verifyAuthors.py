@@ -28,8 +28,3 @@ def isAuthor(fullname, authors_file=None):
         authors_file = default_authors_file()
     return fullname in listAuthors(authors_file=authors_file)
 
-
-def isAdmin(fullname, admins_file=None):
-    if admins_file is None:
-        admins_file = default_admins_file()
-    return fullname+'\n' in open(admins_file).readlines()

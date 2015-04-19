@@ -24,7 +24,7 @@ app = Flask(__name__)
 app.config.from_object('Condorcet.config')
 
 import manageDB
-from verifyAuthors import isAuthor, isAdmin
+from verifyAuthors import isAuthor
 from updateConfig import getConfig, setConfig, getConfigDict, upConfig
 import elections
 
@@ -56,16 +56,17 @@ def set_user():
         session['user'] = {
             'username': 'gdujany',
             'fullname': 'Giulio Dujany'
+            'admin' : True
         }
     else:
         session['user'] = {
             'username': get_environ('ADFS_LOGIN'),
             'fullname': ' '.join([
                 get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
-            ])
+            ]),
+            'admin' : 'lhcb-condorcet-voting' in get_environ['ADFS_GROUP']
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
-    session['user']['admin'] = isAdmin(session['user']['fullname'])
 
 
 def author_required(f):
