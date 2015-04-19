@@ -27,4 +27,3 @@ def isAuthor(fullname, authors_file=None):
     if authors_file is None:
         authors_file = default_authors_file()
     return fullname in listAuthors(authors_file=authors_file)
-
