@@ -11,6 +11,7 @@ from flask.ext.testing import TestCase
 from Condorcet import app
 from Condorcet.config import APPLICATION_ROOT as ROOT
 from Condorcet import manageDB
+from Condorcet import updateConfig
 
 from tests.test_verify_authors import AUTHORS, TestVerifyAuthors
 
@@ -21,13 +22,15 @@ TEST_FIRSTNAME, TEST_LASTNAME = TEST_FULLNAME.split(' ')
 TEST_ENVIRON = {
     'ADFS_LOGIN': TEST_LOGIN,
     'ADFS_FIRSTNAME': TEST_FIRSTNAME,
-    'ADFS_LASTNAME': TEST_LASTNAME
+    'ADFS_LASTNAME': TEST_LASTNAME,
+    'ADFS_GROUP': 'lhcb-condorcet-voting;blabla'
 }
 # This user should not be validated as an author
 TEST_ENVIRON_NOT_AUTHOR = {
     'ADFS_LOGIN': 'foobar',
     'ADFS_FIRSTNAME': 'Foo',
-    'ADFS_LASTNAME': 'Bar'
+    'ADFS_LASTNAME': 'Bar',
+    'ADFS_GROUP': 'lhcb-pollo-alle-mandorle;blabla'
 }
 
 
@@ -47,18 +50,17 @@ class TestApp(TestCase):
     def setUpClass(cls):
         cls.db_path = tempfile.mkdtemp()
         config = {
-            'SQLALCHEMY_DATABASE_URI': r'sqlite:////{0}/{1}'.format(
-                cls.db_path, app.config['VOTES_DB']
-            ),
-            'SQLALCHEMY_BINDS': {
-                'voters': r'sqlite:////{0}/{1}'.format(
-                    cls.db_path, app.config['VOTERS_DB']
-                )
+            'SQLALCHEMY_BINDS': {'votes': r'sqlite:////{0}/{1}'.
+                                 format(cls.db_path, app.config['VOTES_DB']
+                                        ),
+                                 'voters': r'sqlite:////{0}/{1}'.
+                                 format(cls.db_path, app.config['VOTERS_DB']
+                                        )
+                                 }
             }
-        }
         app.config.update(config)
         TestVerifyAuthors.setUpClass()
-        manageDB.initDB(cls.db_path, TestVerifyAuthors.author_list_path)
+        manageDB.initDB(TestVerifyAuthors.author_list_path, cls.db_path)
 
     @classmethod
     def tearDownClass(cls):
@@ -273,60 +275,60 @@ class TestApp(TestCase):
 
     def test_during_elections_too_early_to_vote(self):
         """Should display start time and disable voting before START."""
-        oldstart = self.app.config['START_ELECTION']
+        oldstart = updateConfig.getConfig('START_ELECTION')
         # Set the start to be some time in the future
         newstart = self.datetime_to_time_struct(
             datetime.datetime.now() + datetime.timedelta(hours=1)
         )
-        self.app.config['START_ELECTION'] = newstart
+        updateConfig.setConfig('START_ELECTION', newstart)
         # Sanity check
         self.assertGreater(newstart, oldstart)
 
         self.get('/')
         self.assert_template_used('notCorrectDate.html')
 
-        self.app.config['START_ELECTION'] = oldstart
+        updateConfig.setConfig('START_ELECTION', oldstart)
 
     def test_during_elections_too_late_to_vote(self):
         """Should display end time and disable voting after CLOSE."""
-        oldclose = self.app.config['CLOSE_ELECTION']
+        oldclose = updateConfig.getConfig('CLOSE_ELECTION')
         # Set the close to be some time in the past
         newclose = self.datetime_to_time_struct(
             datetime.datetime.now() - datetime.timedelta(hours=1)
         )
-        self.app.config['CLOSE_ELECTION'] = newclose
+        updateConfig.setConfig('CLOSE_ELECTION', newclose)
         # Sanity check
         self.assertLess(newclose, oldclose)
 
         self.get('/')
         self.assert_template_used('notCorrectDate.html')
 
-        self.app.config['CLOSE_ELECTION'] = oldclose
+        updateConfig.setConfig('CLOSE_ELECTION', oldclose)
 
     def test_publish_results_early(self):
         """Should display results time and not results before VIEW_RESULTS."""
-        oldview = self.app.config['VIEW_RESULTS']
+        oldview = updateConfig.getConfig('VIEW_RESULTS')
         # Set the view to be some time in the future
         newview = self.datetime_to_time_struct(
             datetime.datetime.now() + datetime.timedelta(hours=1)
         )
-        self.app.config['VIEW_RESULTS'] = newview
+        updateConfig.setConfig('VIEW_RESULTS', newview)
 
         self.get('/results')
         self.assert_template_used('notCorrectDate.html')
 
-        self.app.config['VIEW_RESULTS'] = oldview
+        updateConfig.setConfig('VIEW_RESULTS', oldview)
 
     def test_publish_results_after(self):
         """Should display results after VIEW_RESULTS."""
-        oldview = self.app.config['VIEW_RESULTS']
+        oldview = updateConfig.getConfig('VIEW_RESULTS')
         # Set the view to be some time in the past
         newview = self.datetime_to_time_struct(
             datetime.datetime.now() - datetime.timedelta(hours=1)
         )
-        self.app.config['VIEW_RESULTS'] = newview
+        updateConfig.setConfig('VIEW_RESULTS', newview)
 
         self.get('/results')
         self.assert_template_used('results.html')
 
-        self.app.config['VIEW_RESULTS'] = oldview
+        updateConfig.setConfig('VIEW_RESULTS', oldview)

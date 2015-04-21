@@ -5,7 +5,8 @@ from flask import (
     redirect,
     session,
     flash,
-    url_for
+    url_for,
+    send_from_directory,
 )
 from functools import wraps
 import os
@@ -22,30 +23,25 @@ sys.path.append(os.path.join(this_files_dir, '..'))
 app = Flask(__name__)
 app.config.from_object('Condorcet.config')
 
-# convert times in times-tuple
-for time_label in 'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS':
-    app.config[time_label] = time.strptime(
-        app.config[time_label], app.config['DATE_FORMAT']
-    )
-
 import manageDB
 from verifyAuthors import isAuthor
+from updateConfig import getConfig, setConfig, getConfigDict, upConfig
 import elections
 
 alphabet = string.lowercase
-name2letter = dict([
-    (key, val) for key, val in zip(app.config['OPTIONS'], alphabet)
-])
-letter2name = dict([
-    (key, val) for key, val in zip(alphabet, app.config['OPTIONS'])
-])
 
 
 def getStrOrder(choice_made):
+    name2letter = dict(
+        [(key, val) for key, val in zip(getConfig('OPTIONS'), alphabet)]
+        )
     return ''.join([name2letter[choice] for choice in choice_made])
 
 
 def getListChoice(vote):
+    letter2name = dict(
+        [(key, val) for key, val in zip(alphabet, getConfig('OPTIONS'))]
+        )
     return [letter2name[letter] for letter in vote]
 
 
@@ -59,14 +55,16 @@ def set_user():
     if app.config['DEBUG']:
         session['user'] = {
             'username': 'gdujany',
-            'fullname': 'Giulio Dujany'
+            'fullname': 'Giulio Dujany',
+            'admin': True
         }
     else:
         session['user'] = {
             'username': get_environ('ADFS_LOGIN'),
             'fullname': ' '.join([
                 get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
-            ])
+            ]),
+            'admin': 'lhcb-condorcet-voting' in get_environ('ADFS_GROUP')
         }
     session['user']['author'] = isAuthor(session['user']['fullname'])
 
@@ -80,24 +78,34 @@ def author_required(f):
     return decorated_function
 
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session['user']['admin']:
+            # TODO: put a nice page here
+            return 'You appear not to be an admin so you cannot access this content'  # noqa
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def during_elections(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if time.localtime() < app.config['START_ELECTION']:
+        if time.localtime() < getConfig('START_ELECTION'):
             # TODO factor out long string to view
             start = time.strftime(
                 '%d %B %Y at %H.%M',
-                app.config['START_ELECTION']
+                getConfig('START_ELECTION')
             )
             message = 'The election will be begin on ' + start
             return render_template('notCorrectDate.html',
                                    title='Too early to vote',
                                    message=message)
-        if time.localtime() > app.config['CLOSE_ELECTION']:
+        if time.localtime() > getConfig('CLOSE_ELECTION'):
             # TODO factor out long string to view
             close = time.strftime(
                 '%d %B %Y at %H.%M',
-                app.config['CLOSE_ELECTION']
+                getConfig('CLOSE_ELECTION')
             )
             message = 'The closing date of the election was the ' + close
             return render_template('notCorrectDate.html',
@@ -110,12 +118,22 @@ def during_elections(f):
 def publish_results(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if time.localtime() < app.config['VIEW_RESULTS']:
+        if time.localtime() < getConfig('VIEW_RESULTS'):
             results = time.strftime(
                 '%d %B %Y at %H.%M',
-                app.config['START_ELECTION']
+                getConfig('VIEW_RESULTS')
             )
             message = 'The results will be availabe on ' + results
+            if session['user']['admin']:
+                if time.localtime() > getConfig('CLOSE_ELECTION'):
+                    return f(*args, **kwargs)
+                else:
+                    close = time.strftime(
+                        '%d %B %Y at %H.%M',
+                        getConfig('CLOSE_ELECTION')
+                        )
+                    message = 'The election is still on until '+close+' so even if you are an admin you must at least wait for the election to be closed, the results will be pubblically availabe on ' + results  # noqa
+
             return render_template('notCorrectDate.html',
                                    title='Too early to see the results',
                                    message=message)
@@ -133,11 +151,11 @@ def root():
     try:
         session['candidates']
     except KeyError:
-        choices_copy = app.config['OPTIONS'][:]
+        choices_copy = getConfig('OPTIONS')[:]
         random.shuffle(choices_copy)
         session['candidates'] = choices_copy
     return render_template('poll.html',
-                           title=app.config['TITLE'],
+                           title=getConfig('TITLE'),
                            fields=session['candidates'])
 
 
@@ -146,7 +164,7 @@ def root():
 @author_required
 def confirmVote():
     order = []
-    choices = app.config['OPTIONS']
+    choices = getConfig('OPTIONS')
     if len(request.form) == len(choices):
         for num in [str(i) for i in range(1, len(choices) + 1)]:
             order.append(request.form.get(num))
@@ -186,7 +204,7 @@ def savePoll():
 def result():
     # Prepare page with results
     preferences = manageDB.getPreferences()
-    choices = app.config['OPTIONS']
+    choices = getConfig('OPTIONS')
     winners = getListChoice(
         elections.getWinner(
             preferences,
@@ -209,6 +227,91 @@ def notAuthor():
     if session['user']['author']:
         return redirect(url_for('root'))
     return render_template('notAuthor.html'), 403
+
+
+@app.route('/admin')
+@admin_required
+def admin():
+    current_config = getConfigDict()
+    return render_template('admin.html',
+                           current_config=current_config)
+
+
+@app.route('/updateConfiguration', methods=['POST'])
+@admin_required
+def updateConfiguration():
+    new_config = {}
+    new_config['TITLE'] = request.form.get('TITLE')
+    new_config['OPTIONS'] = [i.lstrip() for i in request.form.get('OPTIONS').split(',')]  # noqa
+    new_config['START_ELECTION'] = time.strptime(request.form.get('START_ELECTION_date')+' '+request.form.get('START_ELECTION_time'), '%Y-%m-%d %H:%M')  # noqa
+    new_config['CLOSE_ELECTION'] = time.strptime(request.form.get('CLOSE_ELECTION_date')+' '+request.form.get('CLOSE_ELECTION_time'), '%Y-%m-%d %H:%M')  # noqa
+    new_config['VIEW_RESULTS'] = time.strptime(request.form.get('VIEW_RESULTS_date')+' '+request.form.get('VIEW_RESULTS_time'), '%Y-%m-%d %H:%M')  # noqa
+    current_config = getConfigDict()
+    for key in new_config:
+        if new_config[key] != current_config[key]:
+            if key in ['OPTIONS']:
+                # So that I can check immediately if the candidates have changed  # noqa
+                try:
+                    del session['candidates']
+                except KeyError:
+                    pass
+                flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
+            setConfig(key, new_config[key])
+    return redirect(url_for('admin'))
+
+
+@app.route('/setToNow/<timeDate>', methods=['GET', 'POST'])
+@admin_required
+def setToNow(timeDate):
+    setConfig(timeDate,
+              time.localtime())
+    flash((timeDate+' set to now'), 'success')
+    return redirect(url_for('admin'))
+
+
+@app.route('/resetDatabases', methods=['POST'])
+@admin_required
+def resetDatabases():
+    manageDB.resetDB(authors_file=os.path.join(app.config['DB_DIR'],
+                                               getConfig('AUTHORS_LIST')))
+    flash(('Databases correcly reset'), 'success')
+    return redirect(url_for('admin'))
+
+
+@app.route('/resetConfiguration', methods=['POST'])
+@admin_required
+def resetDefaultConfiguration():
+    old_config = getConfigDict()
+    upConfig()
+    flash(('Default configuration correcly reset'), 'success')
+    new_config = getConfigDict()
+    if old_config['OPTIONS'] != new_config['OPTIONS']:
+        flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
+    if old_config['AUTHORS_LIST'] != new_config['AUTHORS_LIST']:
+        flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
+    return redirect(url_for('admin'))
+
+
+@app.route('/download/<filename>', methods=['GET', 'POST'])
+@admin_required
+def download(filename):
+    return send_from_directory(directory=app.config['DB_DIR'],
+                               filename=filename)
+
+
+@app.route('/uploadAuthorsList', methods=['GET', 'POST'])
+@admin_required
+def uploadAuthorsList():
+    inFile = request.files['filename']
+    inFile_name = inFile.filename
+    if not inFile_name:
+        flash(('No file updated'), 'error')
+    else:
+        inFile.save(os.path.join(app.config['DB_DIR'], inFile_name))
+        setConfig('AUTHORS_LIST', inFile_name)
+        flash(('New list of authors correcly uploaded'), 'success')
+        flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
+    return redirect(url_for('admin'))
 
 
 if __name__ == '__main__':

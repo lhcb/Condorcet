@@ -23,6 +23,9 @@
     {% block body %}{% endblock %}
     <div class="footer cf">
       <ul class="right">
+        {% if session.user.admin %}
+        <li><a href="admin">Admin</a></li>
+        {% endif %}
         <li><a href="#">Help</a></li>
         <li><a href="{{ contact_url() }}">Contact</a></li>
         <li><a href="https://login.cern.ch/adfs/ls/?wa=wsignout1.0">Sign out</a></li>

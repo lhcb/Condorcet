@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>Admin page</h1>
+
+
+<form action="{{ url_for('updateConfiguration') }}" method="POST">
+Title:  <input type="text" name="TITLE"
+value="{{current_config['TITLE']}}" size = 100>
+<br>
+Candidates:  <input type="text" name="OPTIONS" value =
+{{','.join(current_config['OPTIONS'])}} size = 100>
+<br>
+<br>
+Start election:  <input type="date" name="START_ELECTION_date" 
+value
+={{current_config['START_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mday)}}
+>
+<input
+type="time" name="START_ELECTION_time"
+value={{current_config['START_ELECTION'].tm_hour}}:{{current_config['START_ELECTION'].tm_min}}
+>
+<input type="submit" value="Set to now" formaction="{{
+url_for('setToNow',timeDate='START_ELECTION') }}" method="POST" class=inline_button >
+<br>
+End election:  <input type="date" name="CLOSE_ELECTION_date" 
+value
+={{current_config['CLOSE_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mday)}}
+>
+<input
+type="time" name="CLOSE_ELECTION_time"
+value={{current_config['CLOSE_ELECTION'].tm_hour}}:{{current_config['CLOSE_ELECTION'].tm_min}}
+>
+<input type="submit" value="Set to now" formaction="{{
+url_for('setToNow',timeDate='CLOSE_ELECTION') }}" method="POST" class=inline_button >
+<br>
+Start viewing results:  <input type="date" name="VIEW_RESULTS_date" 
+value ={{current_config['VIEW_RESULTS'].tm_year}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mon)}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mday)}} >
+<input
+type="time" name="VIEW_RESULTS_time" value={{current_config['VIEW_RESULTS'].tm_hour}}:{{current_config['VIEW_RESULTS'].tm_min}} >
+<input type="submit" value="Set to now" formaction="{{
+url_for('setToNow',timeDate='VIEW_RESULTS') }}" method="POST" class=inline_button >
+<br>
+<br>
+
+<br>   
+<input type="submit" value="Update Configuration">
+</form>
+
+<form action="{{ url_for('resetDatabases') }}" method="POST">
+<input type="submit" value="Reset databases">
+</form>
+
+<form action="{{ url_for('resetDefaultConfiguration') }}" method="POST">
+<input type="submit" value="Reset to default configuration">
+</form>
+<br>
+
+<a href= https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php> 
+Website where to download list of authors </a><br>
+<br>
+
+
+<a href={{ url_for('download',
+filename=current_config['AUTHORS_LIST']) }} download> 
+Download current list of authors </a><br>
+<br>
+
+<form action="{{ url_for('uploadAuthorsList'
+) }}" method="POST" enctype="multipart/form-data">
+Upload new list of authors: 
+<input
+type="file" name="filename"  size = 40>
+<input type="submit" value="Upload">
+</form>
+<br>
+
+
+{% endblock %}
+

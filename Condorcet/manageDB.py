@@ -18,19 +18,26 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 import os
+import sys
 import random
 import string
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))  # noqa
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from Condorcet import app
-from Condorcet.config import AUTHORS_LIST as default_authors_file
+from Condorcet.updateConfig import getConfig
 from verifyAuthors import listAuthors
+
+
+def default_authors_file():
+    return os.path.join(app.config['DB_DIR'], getConfig('AUTHORS_LIST'))
 
 db = SQLAlchemy(app)
 
 
 class Votes(db.Model):
+    __bind_key__ = 'votes'
     secret_key = db.Column(db.String(8), unique=True, primary_key=True)
     vote = db.Column(db.String(15), unique=False)
 
@@ -67,26 +74,28 @@ def populateTables(authors_file):
         newVoter = Voters(fullname)
         if Voters.query.filter_by(fullname=fullname).all():
             # raise KeyError(fullname+' appears twice in the authors list')
-            print fullname+' appears twice in the authors list'
+            # print fullname+' appears twice in the authors list'
+            print 'some authors appear twice in the authors list'
             continue
         db.session.add(newVoter)
     db.session.commit()
 
 
-def initDB(database_folder, authors_file):
+def initDB(authors_file=None, dbdir=app.config['DB_DIR']):
     """Create voters and votes databases at database_folder.
 
     The authors_file is used to populate the database.
     """
-    dbdir = os.listdir(database_folder)
-    if app.config['VOTERS_DB'] in dbdir or app.config['VOTES_DB'] in dbdir:
+    if authors_file is None:
+        authors_file = default_authors_file()
+    if (app.config['VOTERS_DB'] in os.listdir(dbdir) or app.config['VOTES_DB'] in os.listdir(dbdir)):  # noqa
         raise IOError(
             'Database already there, use --reset option to recreate'
         )
     db.create_all()
     populateTables(authors_file)
-    os.chmod(os.path.join(database_folder, app.config['VOTES_DB']), 0666)
-    os.chmod(os.path.join(database_folder, app.config['VOTERS_DB']), 0666)
+    os.chmod(os.path.join(dbdir, app.config['VOTES_DB']), 0666)
+    os.chmod(os.path.join(dbdir, app.config['VOTERS_DB']), 0666)
 
 
 def isInDB(fullname):
@@ -133,17 +142,28 @@ def getPreferences():
     return [i.vote for i in Votes.query.all()]
 
 
+def rmDB(dbdir=app.config['DB_DIR']):
+    votes_file = os.path.join(dbdir,
+                              app.config['VOTES_DB'])
+    voters_file = os.path.join(dbdir,
+                               app.config['VOTERS_DB'])
+    for db_file in [votes_file, voters_file]:
+        if os.path.exists(db_file):
+            os.remove(db_file)
+
+
+def resetDB(authors_file=None, dbdir=app.config['DB_DIR']):
+    if authors_file is None:
+        authors_file = default_authors_file()
+    rmDB(dbdir)
+    initDB(authors_file, dbdir)
+
 if __name__ == '__main__':
-    dbdir = app.config['DB_DIR']
-    if args.rm or args.reset:
-        votes_file = os.path.join(app.config['DB_DIR'],
-                                  app.config['VOTES_DB'])
-        voters_file = os.path.join(app.config['DB_DIR'],
-                                   app.config['VOTERS_DB'])
-        for db_file in [votes_file, voters_file]:
-            if os.path.exists(db_file):
-                os.remove(db_file)
-    if args.init or args.reset:
-        initDB(dbdir, default_authors_file)
+    if args.rm:
+        rmDB()
+    if args.reset:
+        resetDB(default_authors_file())
+    if args.init:
+        initDB(default_authors_file())
     if args.p:
-        readDB(dbdir, default_authors_file)
+        readDB()
