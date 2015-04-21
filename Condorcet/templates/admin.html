@@ -17,7 +17,7 @@ value
 >
 <input
 type="time" name="START_ELECTION_time"
-value={{current_config['START_ELECTION'].tm_hour}}:{{current_config['START_ELECTION'].tm_min}}
+value={{'{0:02}'.format(current_config['START_ELECTION'].tm_hour)}}:{{'{0:02}'.format(current_config['START_ELECTION'].tm_min)}}
 >
 <input type="submit" value="Set to now" formaction="{{
 url_for('setToNow',timeDate='START_ELECTION') }}" method="POST" class=inline_button >
@@ -28,7 +28,7 @@ value
 >
 <input
 type="time" name="CLOSE_ELECTION_time"
-value={{current_config['CLOSE_ELECTION'].tm_hour}}:{{current_config['CLOSE_ELECTION'].tm_min}}
+value={{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_hour)}}:{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_min)}}
 >
 <input type="submit" value="Set to now" formaction="{{
 url_for('setToNow',timeDate='CLOSE_ELECTION') }}" method="POST" class=inline_button >
