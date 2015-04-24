@@ -28,6 +28,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
 from Condorcet.updateConfig import getConfig
 from verifyAuthors import listAuthors
+import Condorcet
 
 
 def default_authors_file():
@@ -135,6 +136,16 @@ def readDB():
 def getVotes():
     '''List of (secret_key, vote)'''
     return [(i.secret_key, i.vote) for i in Votes.query.all()]
+
+
+def makeCSV(outFile_name):
+    '''
+    Return list of [ secret_key, candidate1, candidate2, ..., candidateN ]
+    '''
+    with open(outFile_name,'w') as outFile:
+        for vote in [[i.secret_key] + Condorcet.getListChoice(i.vote)
+                     for i in Votes.query.all()]:
+            outFile.write(','.join(vote)+'\n')
 
 
 def getPreferences():
