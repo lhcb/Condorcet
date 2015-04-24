@@ -1,5 +1,6 @@
 import random
-from elections import *
+from elections import *  # noqa
+
 
 def inventPreferences(candidates, num_preferences):
     preferences = []

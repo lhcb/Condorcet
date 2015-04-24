@@ -181,37 +181,45 @@ def getWinner(preferences, candidates):
 if __name__ == '__main__':
 
     import argparse
-    parser = argparse.ArgumentParser(description ="Macro tell the winner according to LHCb algorithm given a csv file with votes")
-    parser.add_argument('inFile_name',help='name of the csv input file')
-    parser.add_argument('-m','--method',help='method to use to compute the winner', choices=['LHCb', 'Borda', 'Shulze'], default = 'LHCb')
+    parser = argparse.ArgumentParser(description='''Macro tell the winner
+    according to LHCb algorithm given a csv file with votes''')
+    parser.add_argument('inFile_name', help='name of the csv input file')
+    parser.add_argument('-m', '--method',
+                        help='method to use to compute the winner',
+                        choices=['LHCb', 'Borda', 'Shulze'], default='LHCb')
     args = parser.parse_args()
 
     import string
     alphabet = string.lowercase
 
-    votes = [i.rstrip().split(',')[1:] for i in open(args.inFile_name).readlines()]
-    
+    votes = [i.rstrip().split(',')[1:]
+             for i in open(args.inFile_name).readlines()]
+
     candidates = votes[0]
-    
+
     def getStrOrder(choice_made):
         name2letter = dict(
             [(key, val) for key, val in zip(candidates, alphabet)]
             )
         return ''.join([name2letter[choice] for choice in choice_made])
 
-
     def getListChoice(vote):
         letter2name = dict(
             [(key, val) for key, val in zip(alphabet, candidates)]
             )
         return [letter2name[letter] for letter in vote]
-    
+
     preferences = [getStrOrder(i) for i in votes]
 
     funzWinner = {'LHCb': getWinner,
                   'Borda': getBordaWinner,
                   'Shulze': getShulzeWinner}
-    
-    winners = sorted(getListChoice(funzWinner[args.method](preferences, [i for cont, i in enumerate(alphabet) if cont < len(candidates)])))
-    
+
+    winners = sorted(getListChoice(
+        funzWinner[args.method](preferences,
+                                [i for cont, i
+                                 in enumerate(alphabet)
+                                 if cont < len(candidates)])
+        ))
+
     print winners

@@ -142,7 +142,7 @@ def makeCSV(outFile_name):
     '''
     Return list of [ secret_key, candidate1, candidate2, ..., candidateN ]
     '''
-    with open(outFile_name,'w') as outFile:
+    with open(outFile_name, 'w') as outFile:
         for vote in [[i.secret_key] + Condorcet.getListChoice(i.vote)
                      for i in Votes.query.all()]:
             outFile.write(','.join(vote)+'\n')
