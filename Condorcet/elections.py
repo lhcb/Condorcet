@@ -192,34 +192,38 @@ if __name__ == '__main__':
     import string
     alphabet = string.lowercase
 
-    votes = [i.rstrip().split(',')[1:]
-             for i in open(args.inFile_name).readlines()[1:]]
+    try:
+        votes = [i.rstrip().split(',')[1:]
+                 for i in open(args.inFile_name).readlines()[1:]]
 
-    candidates = votes[0]
+        candidates = votes[0]
 
-    def getStrOrder(choice_made):
-        name2letter = dict(
-            [(key, val) for key, val in zip(candidates, alphabet)]
-            )
-        return ''.join([name2letter[choice] for choice in choice_made])
+        def getStrOrder(choice_made):
+            name2letter = dict(
+                [(key, val) for key, val in zip(candidates, alphabet)]
+                )
+            return ''.join([name2letter[choice] for choice in choice_made])
 
-    def getListChoice(vote):
-        letter2name = dict(
-            [(key, val) for key, val in zip(alphabet, candidates)]
-            )
-        return [letter2name[letter] for letter in vote]
+        def getListChoice(vote):
+            letter2name = dict(
+                [(key, val) for key, val in zip(alphabet, candidates)]
+                )
+            return [letter2name[letter] for letter in vote]
 
-    preferences = [getStrOrder(i) for i in votes]
+        preferences = [getStrOrder(i) for i in votes]
 
-    funzWinner = {'LHCb': getWinner,
-                  'Borda': getBordaWinner,
-                  'Shulze': getShulzeWinner}
+        funzWinner = {'LHCb': getWinner,
+                      'Borda': getBordaWinner,
+                      'Shulze': getShulzeWinner}
 
-    winners = sorted(getListChoice(
-        funzWinner[args.method](preferences,
-                                [i for cont, i
-                                 in enumerate(alphabet)
-                                 if cont < len(candidates)])
-        ))
+        winners = sorted(getListChoice(
+            funzWinner[args.method](preferences,
+                                    [i for cont, i
+                                     in enumerate(alphabet)
+                                     if cont < len(candidates)])
+            ))
 
-    print winners
+        print winners
+
+    except IndexError:
+        print 'csv file empty'
