@@ -143,6 +143,10 @@ def makeCSV(outFile_name):
     Return list of [ secret_key, candidate1, candidate2, ..., candidateN ]
     '''
     with open(outFile_name, 'w') as outFile:
+        outFile.write('Secret key,')
+        for i in range(1, len(getConfig('OPTIONS'))+1):
+            outFile.write('Choice #{0},'.format(i))
+        outFile.write('\n')
         for vote in [[i.secret_key] + Condorcet.getListChoice(i.vote)
                      for i in Votes.query.all()]:
             outFile.write(','.join(vote)+'\n')

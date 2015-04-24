@@ -193,7 +193,7 @@ if __name__ == '__main__':
     alphabet = string.lowercase
 
     votes = [i.rstrip().split(',')[1:]
-             for i in open(args.inFile_name).readlines()]
+             for i in open(args.inFile_name).readlines()[1:]]
 
     candidates = votes[0]
 

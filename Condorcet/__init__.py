@@ -221,6 +221,14 @@ def result():
                            results=results)
 
 
+@app.route('/votes.csv', methods=['GET', 'POST'])
+@publish_results
+def getCSV():
+    manageDB.makeCSV(os.path.join(app.config['DB_DIR'], 'votes.csv'))
+    return send_from_directory(directory=app.config['DB_DIR'],
+                               filename='votes.csv')
+
+
 @app.route('/unauthorised')
 def notAuthor():
     # Authors shouldn't see this page
