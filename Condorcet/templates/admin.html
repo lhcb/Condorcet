@@ -3,58 +3,71 @@
     <h1>Admin page</h1>
 
 
-<form action="{{ url_for('updateConfiguration') }}" method="POST">
-Title:  <input type="text" name="TITLE"
-value="{{current_config['TITLE']}}" size = 100>
-<br>
-Candidates:  <input type="text" name="OPTIONS" value =
-{{','.join(current_config['OPTIONS'])}} size = 100>
-<br>
-<br>
-Start election:  <input type="date" name="START_ELECTION_date" 
-value
-={{current_config['START_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mday)}}
->
-<input
-type="time" name="START_ELECTION_time"
-value={{'{0:02}'.format(current_config['START_ELECTION'].tm_hour)}}:{{'{0:02}'.format(current_config['START_ELECTION'].tm_min)}}
->
-<input type="submit" value="Set to now" formaction="{{
-url_for('setToNow',timeDate='START_ELECTION') }}" method="POST" class=inline_button >
-<br>
-End election:  <input type="date" name="CLOSE_ELECTION_date" 
-value
-={{current_config['CLOSE_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mday)}}
->
-<input
-type="time" name="CLOSE_ELECTION_time"
-value={{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_hour)}}:{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_min)}}
->
-<input type="submit" value="Set to now" formaction="{{
-url_for('setToNow',timeDate='CLOSE_ELECTION') }}" method="POST" class=inline_button >
-<br>
-Start viewing results:  <input type="date" name="VIEW_RESULTS_date" 
-value ={{current_config['VIEW_RESULTS'].tm_year}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mon)}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mday)}} >
-<input
-type="time" name="VIEW_RESULTS_time" value={{current_config['VIEW_RESULTS'].tm_hour}}:{{current_config['VIEW_RESULTS'].tm_min}} >
-<input type="submit" value="Set to now" formaction="{{
-url_for('setToNow',timeDate='VIEW_RESULTS') }}" method="POST" class=inline_button >
-<br>
-<br>
+<div class="block adminblock" style="float: center">
+    <div class="boxtitle" style="padding-bottom: 15px; font-size: 20px;">Election configuration</div>
+    <form action="{{ url_for('updateConfiguration') }}" method="POST">
+    <b>Election title</b>
+    <br>
+    <input type="text" name="TITLE"
+    value="{{current_config['TITLE']}}" size = 100>
+    <br>
+    <br>
+    <b>Candidates</b>
+    <br>
+    <input type="text" name="OPTIONS" value =
+    {{','.join(current_config['OPTIONS'])}} size = 100>
+    <br>
+    <br>
+    <b>Start election</b>
+    <br>
+    <input type="date" name="START_ELECTION_date" 
+    value
+    ={{current_config['START_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['START_ELECTION'].tm_mday)}}
+    >
+    <input
+    type="time" name="START_ELECTION_time"
+    value={{'{0:02}'.format(current_config['START_ELECTION'].tm_hour)}}:{{'{0:02}'.format(current_config['START_ELECTION'].tm_min)}}
+    >
+    <input type="submit" value="Set to now" formaction="{{
+    url_for('setToNow',timeDate='START_ELECTION') }}" method="POST" class=inline_button >
+    <br>
+    <b>End election</b>
+    <br>
+    <input type="date" name="CLOSE_ELECTION_date" 
+    value
+    ={{current_config['CLOSE_ELECTION'].tm_year}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mon)}}-{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_mday)}}
+    >
+    <input
+    type="time" name="CLOSE_ELECTION_time"
+    value={{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_hour)}}:{{'{0:02}'.format(current_config['CLOSE_ELECTION'].tm_min)}}
+    >
+    <input type="submit" value="Set to now" formaction="{{
+    url_for('setToNow',timeDate='CLOSE_ELECTION') }}" method="POST" class=inline_button >
+    <br>
+    <b>Unblinding of results</b>
+    <br>
+    <input type="date" name="VIEW_RESULTS_date" 
+    value ={{current_config['VIEW_RESULTS'].tm_year}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mon)}}-{{'{0:02}'.format(current_config['VIEW_RESULTS'].tm_mday)}} >
+    <input
+    type="time" name="VIEW_RESULTS_time" value={{current_config['VIEW_RESULTS'].tm_hour}}:{{current_config['VIEW_RESULTS'].tm_min}} >
+    <input type="submit" value="Set to now" formaction="{{
+    url_for('setToNow',timeDate='VIEW_RESULTS') }}" method="POST" class=inline_button >
+    <br>
 
-<br>   
-<input type="submit" value="Update Configuration">
-</form>
+    <br>   
+    <input type="submit" value="Update Configuration" class=admin_button style="float: center;">
+    </form>
 
-<form action="{{ url_for('resetDatabases') }}" method="POST">
-<input type="submit" value="Reset databases">
-</form>
+    <form action="{{ url_for('resetDatabases') }}" method="POST">
+    <input type="submit" value="Reset databases" class=admin_button>
+    </form>
 
-<form action="{{ url_for('resetDefaultConfiguration') }}" method="POST">
-<input type="submit" value="Reset to default configuration">
-</form>
-<br>
+    <form action="{{ url_for('resetDefaultConfiguration') }}" method="POST" style="display: float;">
+    <input type="submit" value="Reset to default" class=admin_button>
+    </form>
+    <br>
 
+</div>
 <a href= https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php> 
 Website where to download list of authors </a><br>
 <br>
