@@ -100,7 +100,8 @@ def during_elections(f):
             message = 'The election will be begin on ' + start
             return render_template('notCorrectDate.html',
                                    title='Too early to vote',
-                                   message=message)
+                                   message=message,
+                                   printResultsLink=False)
         if time.localtime() > getConfig('CLOSE_ELECTION'):
             # TODO factor out long string to view
             close = time.strftime(
@@ -110,7 +111,8 @@ def during_elections(f):
             message = 'The closing date of the election was the ' + close
             return render_template('notCorrectDate.html',
                                    title='Too late to vote',
-                                   message=message)
+                                   message=message,
+                                   printResultsLink=True)
         return f(*args, **kwargs)
     return decorated_function
 

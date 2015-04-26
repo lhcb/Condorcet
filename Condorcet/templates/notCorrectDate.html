@@ -3,6 +3,9 @@
 {% block body %}
     <h2>{{title}}</h2>
     <p>{{message}}</p>
+    {% if printResultsLink%}
+        <p>To see the results click <a href='results'>here</a>.</p>
+    {% endif %}
     <p>If you think this is incorrect, please <a href="{{ contact_url() }}">contact the membership committee</a>.</p>
 
 {% endblock %}
