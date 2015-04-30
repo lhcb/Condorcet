@@ -9,7 +9,8 @@ chmod 755 Condorcet/manageDB.py
 Condorcet/manageDB.py --init
 chmod 755 Condorcet/updateConfig.py
 Condorcet/updateConfig.py --reset
-fs setacl -dir Condorcet/databases -acl webserver:afs diklwr
+# Seems it is not needed
+# fs setacl -dir Condorcet/databases -acl webserver:afs diklwr
 chmod +x cgi-bin/condorcet.fcgi
 
 # Change first line in cgi-bin/condorcet.fcgi
