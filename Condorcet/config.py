@@ -35,13 +35,7 @@ DB_DIR = os.path.join(this_files_dir, 'databases')
 # xml file with author list, can be downloaded form:
 # https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php
 # write only the file name and place the file in the same folder DB_DIR
-AUTHORS_LIST = 'LHCb_Authorship_flat_28-Mar-2015.xml'
-
-# list of admins of the website, simple text file with full names of admins
-# as they appear in AUTHOR_LIST
-# N.B. for now names are case sensitive and are "Firsname Lastname"
-# write only the file name and place the file in the same folder DB_DIR
-ADMINS_LIST = 'admins.txt'
+AUTHORS_LIST = 'LHCb_Voters.xml'
 
 ###############################################################################
 
@@ -56,7 +50,7 @@ except KeyError:
     DEBUG = False
 
 # Root path the site lives at
-APPLICATION_ROOT = '/' if DEBUG else '/gdujany/Condorcet'
+APPLICATION_ROOT = '/' if DEBUG else '/lhcb-condorcet/Condorcet'
 
 # Key for encypting session information
 SECRET_KEY = 'cH\xc5\xd9\xd2\xc4,^\x8c\x9f3S\x94Y\xe5\xc7!\x06>A'
