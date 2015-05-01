@@ -150,7 +150,7 @@ class TestConfig(unittest2.TestCase):
         if environ_debug:
             root = '/'
         else:
-            root = '/gdujany/Condorcet'
+            root = '/lhcb-condorcet/Condorcet'
         self.assertEqual(config.APPLICATION_ROOT, root)
 
         # Also try setting the environment explicitly
@@ -159,7 +159,7 @@ class TestConfig(unittest2.TestCase):
         self.assertEqual(config.APPLICATION_ROOT, '/')
         del os.environ['DEBUG']
         reload(config)
-        self.assertEqual(config.APPLICATION_ROOT, '/gdujany/Condorcet')
+        self.assertEqual(config.APPLICATION_ROOT, '/lhcb-condorcet/Condorcet')
 
         # Restore the environment variable if it was set
         if environ_debug:
