@@ -53,6 +53,7 @@
     <input type="submit" value="Set to now" formaction="{{
     url_for('setToNow',timeDate='VIEW_RESULTS') }}" method="POST" class=inline_button >
     <br>
+    <a href= {{url_for('result')}}> See results </a><br>
 
     <br>   
     <input type="submit" value="Update Configuration" class=admin_button style="float: center;">
@@ -86,7 +87,6 @@ type="file" name="filename"  size = 40>
 <input type="submit" value="Upload">
 </form>
 <br>
-
 
 {% endblock %}
 
