@@ -236,7 +236,8 @@ def notAuthor():
     # Authors shouldn't see this page
     if session['user']['author']:
         return redirect(url_for('root'))
-    return render_template('notAuthor.html',authorList=getConfig('AUTHORS_LIST')), 403
+    return render_template('notAuthor.html',
+                           authorList=getConfig('AUTHORS_LIST')), 403
 
 
 @app.route('/admin')
@@ -321,7 +322,7 @@ def uploadAuthorsList():
         inFile.save(os.path.join(app.config['DB_DIR'], inFile_name))
         setConfig('AUTHORS_LIST', inFile_name)
         manageDB.updateVoters(authors_file=os.path.join(app.config['DB_DIR'],
-                                               getConfig('AUTHORS_LIST')))
+                              getConfig('AUTHORS_LIST')))
         flash(('New list of authors correcly uploaded'), 'success')
         flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))

@@ -81,10 +81,10 @@ def populateTables(authors_file):
     db.session.commit()
     if len(multiple_entries) != 0:
         print 'some authors appear twice in the authors list'
-        with open('multiple_entries.txt','w') as outFile:
+        with open('multiple_entries.txt', 'w') as outFile:
             outFile.write(str(multiple_entries))
 
-    
+
 def updateVoters(authors_file):
     """
     Add to the voters' database authors that are present
