@@ -71,12 +71,29 @@ class Voters(db.Model):
 
 def populateTables(authors_file):
     """Populate voters table with author list."""
+    multiple_entries = []
     for fullname in listAuthors(authors_file):
         newVoter = Voters(fullname)
         if Voters.query.filter_by(fullname=fullname).all():
-            # raise KeyError(fullname+' appears twice in the authors list')
-            # print fullname+' appears twice in the authors list'
-            print 'some authors appear twice in the authors list'
+            multiple_entries.append(fullname)
+            continue
+        db.session.add(newVoter)
+    db.session.commit()
+    if len(multiple_entries) != 0:
+        print 'some authors appear twice in the authors list'
+        with open('multiple_entries.txt','w') as outFile:
+            outFile.write(str(multiple_entries))
+
+    
+def updateVoters(authors_file):
+    """
+    Add to the voters' database authors that are present
+    in the authors_file but were not in the database
+    leave unchanged the other authors.
+    """
+    for fullname in listAuthors(authors_file):
+        newVoter = Voters(fullname)
+        if Voters.query.filter_by(fullname=fullname).all():
             continue
         db.session.add(newVoter)
     db.session.commit()

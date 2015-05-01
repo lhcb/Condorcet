@@ -320,6 +320,8 @@ def uploadAuthorsList():
     else:
         inFile.save(os.path.join(app.config['DB_DIR'], inFile_name))
         setConfig('AUTHORS_LIST', inFile_name)
+        manageDB.updateVoters(authors_file=os.path.join(app.config['DB_DIR'],
+                                               getConfig('AUTHORS_LIST')))
         flash(('New list of authors correcly uploaded'), 'success')
         flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))
