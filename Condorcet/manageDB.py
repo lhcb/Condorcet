@@ -155,6 +155,12 @@ def getVotes():
     return [(i.secret_key, i.vote) for i in Votes.query.all()]
 
 
+def getNumVoters():
+    '''Get tuple (number voters, number possible voters)'''
+    return(len([voter for voter in Voters.query.all() if voter.hasVoted]),
+           len(Voters.query.all()))
+
+
 def makeCSV(outFile_name):
     '''
     Return list of [ secret_key, candidate1, candidate2, ..., candidateN ]

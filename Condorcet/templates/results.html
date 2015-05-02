@@ -8,6 +8,8 @@
   {% else %}
     <p>The winner of the election is <span class="important">{{ winners[0] }}</span>.</p>
   {% endif %}
+  <p>{{numVoters[0]}} votes have been cast. {{numVoters[1]}}
+    members were elegible to vote.</p>
 <br>
 
 <a href={{ url_for('getCSV') }} download> 

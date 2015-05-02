@@ -217,9 +217,12 @@ def result():
         [i[0]] + getListChoice(i[1])
         for i in manageDB.getVotes()
     ]
+    numVoters = manageDB.getNumVoters()
+    assert len(results) == numVoters[0]
     return render_template('results.html',
                            winners=winners,
                            numCandidates=len(choices),
+                           numVoters=numVoters,
                            results=results)
 
 
