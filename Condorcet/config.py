@@ -14,7 +14,7 @@ TITLE = 'Order the quarks in the order you prefer them'
 # Poll options
 OPTIONS = ['Up', 'Down', 'Charm', 'Strange', 'Top', 'Beauty']
 # Contact email address
-CONTACT = 'admin@example.com'
+CONTACT = 'lhcb-condorcet-voting@example.com'
 
 # Dates
 
