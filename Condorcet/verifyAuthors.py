@@ -33,8 +33,17 @@ def isAuthor(fullname, authors_file=None):
         authors_file = default_authors_file()
     matches = process.extract(fullname, listAuthors(authors_file=authors_file),
                               limit=3)
-    if (matches[0][1] > 80 and
-       (matches[0][1] - matches[1][1]) > (matches[1][1] - matches[2][1])):
+    if (matches[0][1] > 85 and
+       (matches[0][1] - matches[1][1]) > min(10, (matches[1][1] - matches[2][1]))):  # noqa
         return matches[0][0]
+    if len(fullname.split()) > 2:
+        parts = fullname.split()
+        newfullname = ' '.join([parts[0], parts[-1]])
+        matches = process.extract(newfullname,
+                                  listAuthors(authors_file=authors_file),
+                                  limit=3)
+        if (matches[0][1] > 85 and
+           (matches[0][1] - matches[1][1]) > min(10, (matches[1][1] - matches[2][1]))):  # noqa
+            return matches[0][0]
     else:
         return False
