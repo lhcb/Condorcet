@@ -36,7 +36,7 @@ TEST_ENVIRON_NOT_AUTHOR = {
 
 def mocked_isAuthor(fullname, authors_file=''):
     # Assume the only author is TEST_FULLNAME
-    return fullname == TEST_FULLNAME
+    return fullname if fullname == TEST_FULLNAME else False
 
 
 def mocked_hasVoted(fullname):
