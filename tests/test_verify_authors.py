@@ -58,7 +58,7 @@ AUTHORS = [
 # List of names that should not be present in the above XML file
 NOT_AUTHORS = [
     'a',
-    'Given4 Family4'
+    'Pollo4 Family4'
 ]
 
 
