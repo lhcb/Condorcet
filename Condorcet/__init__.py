@@ -66,7 +66,13 @@ def set_user():
             ]),
             'admin': 'lhcb-condorcet-voting' in get_environ('ADFS_GROUP')
         }
-    session['user']['author'] = isAuthor(session['user']['fullname'])
+    fuzzyMatch = isAuthor(session['user']['fullname'])
+    print fuzzyMatch
+    if fuzzyMatch:
+        session['user']['author'] = True
+        session['user']['fullname'] = fuzzyMatch
+    else:
+        session['user']['author'] = False
 
 
 def author_required(f):
