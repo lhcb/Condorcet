@@ -47,11 +47,17 @@ def isAuthor(fullname, authors_file=None):
 
     if fullname_norm in list_authors_norm:
         return fullname
-    else:
-        parts = set(fullname_norm.split())
-        for name, name_norm in zip(list_authors, list_authors_norm):
-            if (set(name_norm.split()).issubset(parts) or
-               parts.issubset(set(name_norm.split()))):
-                return name
 
+    parts = set(fullname_norm.split())
+    for name, name_norm in zip(list_authors, list_authors_norm):
+        if (set(name_norm.split()).issubset(parts) or
+           parts.issubset(set(name_norm.split()))):
+            return name
+
+    gg = {}
+    execfile(os.path.join(app.config['DB_DIR'], 'known_mismatches.py'), gg)
+    try:
+        return gg['known_mismatches'][fullname]
+    except KeyError:
+        pass
     return False
