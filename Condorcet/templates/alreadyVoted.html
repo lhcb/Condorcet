@@ -3,6 +3,9 @@
 {% block body %}
     <h2>You have already voted</h2>
 
-    <p>Each LHCb author is allowed a single unalterable vote, and there is already a vote registered for {{ session.user.fullname }}. If you believe that you have not yet voted, please <a href="{{ contact_url() }}">contact the membership committee</a>.</p>
+    <p>Each LHCb author is allowed a single unalterable vote, and there is
+    already a vote registered for {{ session.user.fullname }}. If you believe
+    that you have not yet voted, please <a href="{{ contact_url() }}">contact
+    the admins</a>.</p>
     <p><a href='results'>Click here</a> to see the election results.</p>
 {% endblock %}
