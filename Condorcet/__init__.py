@@ -24,7 +24,7 @@ app = Flask(__name__)
 app.config.from_object('Condorcet.config')
 
 import manageDB
-from verifyAuthors import isAuthor
+from verifyVoters import isVoter
 from updateConfig import getConfig, setConfig, getConfigDict, upConfig
 import elections
 
@@ -56,7 +56,8 @@ def set_user():
         session['user'] = {
             'username': 'gdujany',
             'fullname': 'Giulio Dujany',
-            'admin': True
+            'admin': True,
+            'cernid': '718579',
         }
     else:
         session['user'] = {
@@ -64,16 +65,17 @@ def set_user():
             'fullname': ' '.join([
                 get_environ('ADFS_FIRSTNAME'), get_environ('ADFS_LASTNAME')
             ]),
-            'admin': 'lhcb-condorcet-voting' in get_environ('ADFS_GROUP')
+            'admin': 'lhcb-condorcet-voting' in get_environ('ADFS_GROUP'),
+            'cernid': get_environ('ADFS_PERSONID')  # <- FIXME!
         }
-    session['user']['author'] = isAuthor(session['user']['fullname'])
+    session['user']['voter'] = isVoter(session['user']['cernid'])
 
 
-def author_required(f):
+def voter_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session['user']['author']:
-            return redirect(url_for('notAuthor'))
+        if not session['user']['voter']:
+            return redirect(url_for('notVoter'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -145,10 +147,10 @@ def publish_results(f):
 
 @app.route('/')
 @during_elections
-@author_required
+@voter_required
 def root():
-    fullname = session['user']['fullname']
-    if manageDB.isInDB(fullname):
+    cernid = session['user']['cernid']
+    if manageDB.isInDB(cernid):
         return render_template('alreadyVoted.html')
     try:
         session['candidates']
@@ -163,7 +165,7 @@ def root():
 
 @app.route('/poll', methods=['POST'])
 @during_elections
-@author_required
+@voter_required
 def confirmVote():
     order = []
     choices = getConfig('OPTIONS')
@@ -175,8 +177,8 @@ def confirmVote():
         # So that fails next if
         vote = ''
     if len(set(vote)) == len(choices):
-        fullname = session['user']['fullname']
-        if manageDB.isInDB(fullname):
+        cernid = session['user']['cernid']
+        if manageDB.isInDB(cernid):
             return render_template('alreadyVoted.html')
         session['vote'] = vote
         return render_template('confirmVote.html', choices=getListChoice(vote))
@@ -190,14 +192,14 @@ def confirmVote():
 
 @app.route('/saveVote')
 @during_elections
-@author_required
+@voter_required
 def savePoll():
     if not session.get('vote'):
         return redirect(url_for('root'))
-    fullname = session['user']['fullname']
-    if manageDB.isInDB(fullname):
+    cernid = session['user']['cernid']
+    if manageDB.isInDB(cernid):
         return render_template('alreadyVoted.html')
-    secret_key = manageDB.addVote(fullname, session['vote'])
+    secret_key = manageDB.addVote(cernid, session['vote'])
     return render_template('congrats.html', secret_key=secret_key)
 
 
@@ -235,12 +237,12 @@ def getCSV():
 
 
 @app.route('/unauthorised')
-def notAuthor():
-    # Authors shouldn't see this page
-    if session['user']['author']:
+def notVoter():
+    # Voters shouldn't see this page
+    if session['user']['voter']:
         return redirect(url_for('root'))
-    return render_template('notAuthor.html',
-                           authorList=getConfig('AUTHORS_LIST')), 403
+    return render_template('notVoter.html',
+                           voterList=getConfig('VOTERS_LIST')), 403
 
 
 @app.route('/admin')
@@ -286,8 +288,8 @@ def setToNow(timeDate):
 @app.route('/resetDatabases', methods=['POST'])
 @admin_required
 def resetDatabases():
-    manageDB.resetDB(authors_file=os.path.join(app.config['DB_DIR'],
-                                               getConfig('AUTHORS_LIST')))
+    manageDB.resetDB(voters_file=os.path.join(app.config['DB_DIR'],
+                                              getConfig('VOTERS_LIST')))
     flash(('Databases correcly reset'), 'success')
     return redirect(url_for('admin'))
 
@@ -301,8 +303,8 @@ def resetDefaultConfiguration():
     new_config = getConfigDict()
     if old_config['OPTIONS'] != new_config['OPTIONS']:
         flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
-    if old_config['AUTHORS_LIST'] != new_config['AUTHORS_LIST']:
-        flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
+    if old_config['VOTERS_LIST'] != new_config['VOTERS_LIST']:
+        flash(('You changed the list of voters so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))
 
 
@@ -314,20 +316,20 @@ def download(filename):
                                filename=filename)
 
 
-@app.route('/uploadAuthorsList', methods=['GET', 'POST'])
+@app.route('/uploadVotersList', methods=['GET', 'POST'])
 @admin_required
-def uploadAuthorsList():
+def uploadVotersList():
     inFile = request.files['filename']
     inFile_name = inFile.filename
     if not inFile_name:
         flash(('No file updated'), 'error')
     else:
         inFile.save(os.path.join(app.config['DB_DIR'], inFile_name))
-        setConfig('AUTHORS_LIST', inFile_name)
-        manageDB.updateVoters(authors_file=os.path.join(app.config['DB_DIR'],
-                              getConfig('AUTHORS_LIST')))
-        flash(('New list of authors correcly uploaded'), 'success')
-        flash(('You changed the list of authors so you probably want to reset the databases'), 'error')  # noqa
+        setConfig('VOTERS_LIST', inFile_name)
+        manageDB.updateVoters(voters_file=os.path.join(app.config['DB_DIR'],
+                              getConfig('VOTERS_LIST')))
+        flash(('New list of voters correcly uploaded'), 'success')
+        flash(('You changed the list of voters so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))
 
 

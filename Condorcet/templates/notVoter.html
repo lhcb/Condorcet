@@ -2,9 +2,11 @@
 {% from "_helpers.html" import contact_url %}
 {% block body %}
     <h2>Not eligible to vote</h2>
-    <p>The LHCb constitution only allows LHCb collaborators who are on the author list to vote in the Physics Coordinator elections, and so you are unable to vote.</p>
+    <p>The LHCb constitution only allows LHCb collaborators who are on the
+author list and are still member of the collaboration to vote in the Physics Coordinator elections, and so you are unable to vote.</p>
     <p>Your name is <span class="important">{{session.user.fullname}}</span> and you do not seems to
-    appear in the <a href={{ url_for('download', filename=authorList) }} download> author list </a></p>
+    appear in the <a href={{ url_for('download', filename=authorList) }}
+download> list of voters </a></p>
     <p>If you think this is incorrect, please <a href="{{ contact_url() }}">contact the admins</a>.</p>
 
 {% endblock %}

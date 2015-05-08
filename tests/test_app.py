@@ -13,38 +13,39 @@ from Condorcet.config import APPLICATION_ROOT as ROOT
 from Condorcet import manageDB
 from Condorcet import updateConfig
 
-from tests.test_verify_authors import AUTHORS, TestVerifyAuthors
+from tests.test_verify_voters import VOTERS_FULL, TestVerifyVoters
 
 
 TEST_LOGIN = 'testuser'
-TEST_FULLNAME = AUTHORS[0]
-TEST_FIRSTNAME, TEST_LASTNAME = TEST_FULLNAME.split(' ')
+TEST_CERNID, TEST_FIRSTNAME, TEST_LASTNAME = VOTERS_FULL[0]
 TEST_ENVIRON = {
     'ADFS_LOGIN': TEST_LOGIN,
     'ADFS_FIRSTNAME': TEST_FIRSTNAME,
     'ADFS_LASTNAME': TEST_LASTNAME,
-    'ADFS_GROUP': 'lhcb-condorcet-voting;blabla'
+    'ADFS_GROUP': 'lhcb-condorcet-voting;blabla',
+    'ADFS_PERSONID': '000001'
 }
-# This user should not be validated as an author
-TEST_ENVIRON_NOT_AUTHOR = {
+# This user should not be validated as an voter
+TEST_ENVIRON_NOT_VOTER = {
     'ADFS_LOGIN': 'foobar',
     'ADFS_FIRSTNAME': 'Foo',
     'ADFS_LASTNAME': 'Bar',
-    'ADFS_GROUP': 'lhcb-pollo-alle-mandorle;blabla'
+    'ADFS_GROUP': 'lhcb-pollo-alle-mandorle;blabla',
+    'ADFS_PERSONID': '000004'
 }
 
 
-def mocked_isAuthor(fullname, authors_file=''):
-    # Assume the only author is TEST_FULLNAME
-    return fullname == TEST_FULLNAME
+def mocked_isVoter(cernid, voters_file=''):
+    # Assume the only voter is TEST_CERNID
+    return cernid == TEST_CERNID
 
 
-def mocked_hasVoted(fullname):
-    # Assume the only author is TEST_FULLNAME
-    return fullname == TEST_FULLNAME
+def mocked_hasVoted(cernid):
+    # Assume the only voter is TEST_CERNID
+    return cernid == TEST_CERNID
 
 
-@mock.patch('Condorcet.isAuthor', mocked_isAuthor)
+@mock.patch('Condorcet.isVoter', mocked_isVoter)
 class TestApp(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -59,18 +60,18 @@ class TestApp(TestCase):
                                  }
             }
         app.config.update(config)
-        TestVerifyAuthors.setUpClass()
-        manageDB.initDB(TestVerifyAuthors.author_list_path, cls.db_path)
+        TestVerifyVoters.setUpClass()
+        manageDB.initDB(TestVerifyVoters.voter_list_path, cls.db_path)
 
     @classmethod
     def tearDownClass(cls):
-        TestVerifyAuthors.tearDownClass()
+        TestVerifyVoters.tearDownClass()
         shutil.rmtree(cls.db_path)
 
     def setUp(self):
         manageDB.db.drop_all()
         manageDB.db.create_all()
-        manageDB.populateTables(TestVerifyAuthors.author_list_path)
+        manageDB.populateTables(TestVerifyVoters.voter_list_path)
 
         # Make sure the tests run during valid election times
         newstart = datetime.datetime.now() + datetime.timedelta(hours=-1)
@@ -101,8 +102,8 @@ class TestApp(TestCase):
         return self.client.get(*args, environ_base=environ_base, **kwargs)
 
     def get_as_unauthorised(self, *args, **kwargs):
-        """Wrap self.client.get, always passing TEST_ENVIRON_NOT_AUTHOR."""
-        return self.get(environ_base=TEST_ENVIRON_NOT_AUTHOR)
+        """Wrap self.client.get, always passing TEST_ENVIRON_NOT_VOTER."""
+        return self.get(environ_base=TEST_ENVIRON_NOT_VOTER)
 
     def post(self, *args, **kwargs):
         """Wrap self.client.post, always passing TEST_ENVIRON.
@@ -115,8 +116,8 @@ class TestApp(TestCase):
         return self.client.post(*args, environ_base=environ_base, **kwargs)
 
     def post_as_unauthorised(self, *args, **kwargs):
-        """Wrap self.client.post, always passing TEST_ENVIRON_NOT_AUTHOR."""
-        return self.post(environ_base=TEST_ENVIRON_NOT_AUTHOR)
+        """Wrap self.client.post, always passing TEST_ENVIRON_NOT_VOTER."""
+        return self.post(environ_base=TEST_ENVIRON_NOT_VOTER)
 
     def request_context(self, *args, **kwargs):
         """Wrap self.app.test_request_context, always passing TEST_ENVIRON.
@@ -131,8 +132,8 @@ class TestApp(TestCase):
         )
 
     def request_context_as_unauthorised(self, *args, **kwargs):
-        """Wrap self.test_request_context to pass TEST_ENVIRON_NOT_AUTHOR."""
-        return self.request_context(environ_base=TEST_ENVIRON_NOT_AUTHOR)
+        """Wrap self.test_request_context to pass TEST_ENVIRON_NOT_VOTER."""
+        return self.request_context(environ_base=TEST_ENVIRON_NOT_VOTER)
 
     def url(self, path='/'):
         """Return the full URL corresponding to the application path."""
@@ -162,24 +163,24 @@ class TestApp(TestCase):
         with self.request_context('/'):
             self.app.preprocess_request()
             self.assertEqual(flask.session['user']['username'], TEST_LOGIN)
-            self.assertEqual(flask.session['user']['fullname'], TEST_FULLNAME)
+            self.assertEqual(flask.session['user']['cernid'], TEST_CERNID)
 
-    def test_set_user_not_author(self):
-        """Author status of user should be set if user is in database."""
+    def test_set_user_not_voter(self):
+        """Voter status of user should be set if user is in database."""
         with self.request_context('/'):
             self.app.preprocess_request()
-            self.assertTrue(flask.session['user']['author'])
+            self.assertTrue(flask.session['user']['voter'])
         with self.request_context_as_unauthorised('/'):
             self.app.preprocess_request()
-            self.assertFalse(flask.session['user']['author'])
+            self.assertFalse(flask.session['user']['voter'])
 
-    def test_author_required_is_author(self):
-        """Authors should be able to see wrapped routes."""
+    def test_voter_required_is_voter(self):
+        """Voters should be able to see wrapped routes."""
         self.get('/')
         self.assert_template_used('poll.html')
 
-    def test_author_required_is_not_author(self):
-        """Redirect to warning page if user is not an author."""
+    def test_voter_required_is_not_voter(self):
+        """Redirect to warning page if user is not an voter."""
         resp = self.get_as_unauthorised('/')
         self.assertEqual(resp.status_code, 302)
         self.assertRedirects(resp, self.url('/unauthorised'))
@@ -258,7 +259,7 @@ class TestApp(TestCase):
             resp = c.get('/saveVote', environ_base=TEST_ENVIRON)
             self.assert_template_used('congrats.html')
             # addVote should have been called
-            mocked.assert_called_with(flask.session['user']['fullname'], VOTE)
+            mocked.assert_called_with(flask.session['user']['cernid'], VOTE)
             # Secret key should be displayed
             self.assertIn(mocked.return_value, resp.data)
 
@@ -267,8 +268,8 @@ class TestApp(TestCase):
         resp = self.get('/saveVote')
         self.assert_redirects(resp, self.url('/'))
 
-    def test_not_author_is_author(self):
-        """Authors should be redirect away from the 'not an author' page."""
+    def test_not_voter_is_voter(self):
+        """Voters should be redirect away from the 'not an voter' page."""
         resp = self.get('/unauthorised')
         self.assertEqual(resp.status_code, 302)
         self.assertRedirects(resp, self.url())

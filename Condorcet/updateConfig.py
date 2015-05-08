@@ -33,7 +33,7 @@ this_files_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(this_files_dir, '..'))
 
 _fields = ['KEY', 'TITLE', 'OPTIONS', 'CONTACT', 'DATE_FORMAT',
-           'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS', 'AUTHORS_LIST']
+           'START_ELECTION', 'CLOSE_ELECTION', 'VIEW_RESULTS', 'VOTERS_LIST']
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from Condorcet import app
@@ -49,10 +49,10 @@ class Config(db.Model):
     START_ELECTION = db.Column(db.String(100), unique=False)
     CLOSE_ELECTION = db.Column(db.String(100), unique=False)
     VIEW_RESULTS = db.Column(db.String(100), unique=False)
-    AUTHORS_LIST = db.Column(db.String(100), unique=False)
+    VOTERS_LIST = db.Column(db.String(100), unique=False)
 
     def __init__(self, KEY, TITLE, OPTIONS, CONTACT, DATE_FORMAT,
-                 START_ELECTION, CLOSE_ELECTION, VIEW_RESULTS, AUTHORS_LIST):
+                 START_ELECTION, CLOSE_ELECTION, VIEW_RESULTS, VOTERS_LIST):
         for field in _fields:
             exec 'self.{0} = {0}'.format(field)
 
@@ -158,4 +158,4 @@ if __name__ == '__main__':
         print Config.query.all()
 
 # N.B.
-# If I change OPTIONS or AUTHORS_LIST I want also to reset the voters/votes databases  # noqa
+# If I change OPTIONS or VOTERS_LIST I want also to reset the voters/votes databases  # noqa

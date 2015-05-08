@@ -27,12 +27,12 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from Condorcet import app
 from Condorcet.updateConfig import getConfig
-from verifyAuthors import listAuthors
+from verifyVoters import listVoters
 import Condorcet
 
 
-def default_authors_file():
-    return os.path.join(app.config['DB_DIR'], getConfig('AUTHORS_LIST'))
+def default_voters_file():
+    return os.path.join(app.config['DB_DIR'], getConfig('VOTERS_LIST'))
 
 db = SQLAlchemy(app)
 
@@ -52,75 +52,75 @@ class Votes(db.Model):
 
 class Voters(db.Model):
     __bind_key__ = 'voters'
-    fullname = db.Column(db.String(20), unique=True, primary_key=True)
+    cernid = db.Column(db.String(20), unique=True, primary_key=True)
     hasVoted = db.Column(db.Boolean)
 
-    def __init__(self, fullname):
-        self.fullname = fullname
+    def __init__(self, cernid):
+        self.cernid = cernid
         # Set hasVoted to False on initialization
         self.hasVoted = False
 
     def __repr__(self):
-        return '<User: {fullname}, has voted: {hasVoted}>'.format(
+        return '<User: {cernid}, has voted: {hasVoted}>'.format(
             **self.__dict__
         )
 
     def __str__(self):
-        return '<{fullname}>'.format(**self.__dict__)
+        return '<{cernid}>'.format(**self.__dict__)
 
 
-def populateTables(authors_file):
-    """Populate voters table with author list."""
+def populateTables(voters_file):
+    """Populate voters table with voter list."""
     multiple_entries = []
-    for fullname in listAuthors(authors_file):
-        newVoter = Voters(fullname)
-        if Voters.query.filter_by(fullname=fullname).all():
-            multiple_entries.append(fullname)
+    for cernid in listVoters(voters_file):
+        newVoter = Voters(cernid)
+        if Voters.query.filter_by(cernid=cernid).all():
+            multiple_entries.append(cernid)
             continue
         db.session.add(newVoter)
     db.session.commit()
     if len(multiple_entries) != 0:
-        print 'some authors appear twice in the authors list'
+        print 'some voters appear twice in the voters list'
         with open('multiple_entries.txt', 'w') as outFile:
             outFile.write(str(multiple_entries))
 
 
-def updateVoters(authors_file):
+def updateVoters(voters_file):
     """
-    Add to the voters' database authors that are present
-    in the authors_file but were not in the database
-    leave unchanged the other authors.
+    Add to the voters' database voters that are present
+    in the voters_file but were not in the database
+    leave unchanged the other voters.
     """
-    for fullname in listAuthors(authors_file):
-        newVoter = Voters(fullname)
-        if Voters.query.filter_by(fullname=fullname).all():
+    for cernid in listVoters(voters_file):
+        newVoter = Voters(cernid)
+        if Voters.query.filter_by(cernid=cernid).all():
             continue
         db.session.add(newVoter)
     db.session.commit()
 
 
-def initDB(authors_file=None, dbdir=app.config['DB_DIR']):
+def initDB(voters_file=None, dbdir=app.config['DB_DIR']):
     """Create voters and votes databases at database_folder.
 
-    The authors_file is used to populate the database.
+    The voters_file is used to populate the database.
     """
-    if authors_file is None:
-        authors_file = default_authors_file()
+    if voters_file is None:
+        voters_file = default_voters_file()
     if (app.config['VOTERS_DB'] in os.listdir(dbdir) or app.config['VOTES_DB'] in os.listdir(dbdir)):  # noqa
         raise IOError(
             'Database already there, use --reset option to recreate'
         )
     db.create_all()
-    populateTables(authors_file)
+    populateTables(voters_file)
     os.chmod(os.path.join(dbdir, app.config['VOTES_DB']), 0666)
     os.chmod(os.path.join(dbdir, app.config['VOTERS_DB']), 0666)
 
 
-def isInDB(fullname):
+def isInDB(cernid):
     try:
-        return Voters.query.filter_by(fullname=fullname).first().hasVoted
+        return Voters.query.filter_by(cernid=cernid).first().hasVoted
     except AttributeError:
-        raise KeyError(fullname + ' not in the list of possible voters')
+        raise KeyError(cernid + ' not in the list of possible voters')
 
 
 def generateSecretKey(length=8):
@@ -128,16 +128,16 @@ def generateSecretKey(length=8):
     return ''.join(random.sample(string.lowercase + string.digits, length))
 
 
-def addVote(fullname, vote):
-    if isInDB(fullname):
-        raise KeyError(fullname + ' has already voted')
+def addVote(cernid, vote):
+    if isInDB(cernid):
+        raise KeyError(cernid + ' has already voted')
     else:
         while True:
             secret_key = generateSecretKey()
             if not bool(Votes.query.filter_by(secret_key=secret_key).all()):
                 break
         newPreference = Votes(secret_key, vote)
-        Voters.query.filter_by(fullname=fullname).first().hasVoted = True
+        Voters.query.filter_by(cernid=cernid).first().hasVoted = True
         db.session.add(newPreference)
         db.session.commit()
         return secret_key
@@ -190,18 +190,18 @@ def rmDB(dbdir=app.config['DB_DIR']):
             os.remove(db_file)
 
 
-def resetDB(authors_file=None, dbdir=app.config['DB_DIR']):
-    if authors_file is None:
-        authors_file = default_authors_file()
+def resetDB(voters_file=None, dbdir=app.config['DB_DIR']):
+    if voters_file is None:
+        voters_file = default_voters_file()
     rmDB(dbdir)
-    initDB(authors_file, dbdir)
+    initDB(voters_file, dbdir)
 
 if __name__ == '__main__':
     if args.rm:
         rmDB()
     if args.reset:
-        resetDB(default_authors_file())
+        resetDB(default_voters_file())
     if args.init:
-        initDB(default_authors_file())
+        initDB(default_voters_file())
     if args.p:
         readDB()

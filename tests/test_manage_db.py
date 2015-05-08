@@ -8,7 +8,7 @@ import string
 from Condorcet import app
 from Condorcet import manageDB
 
-from tests.test_verify_authors import AUTHORS, NOT_AUTHORS, TestVerifyAuthors
+from tests.test_verify_voters import VOTERS, NOT_VOTERS, TestVerifyVoters
 
 NAMES = [
     'Given1 Family1',
@@ -31,19 +31,19 @@ class TestManageDB(unittest2.TestCase):
                                  }
             }
         app.config.update(config)
-        TestVerifyAuthors.setUpClass()
-        manageDB.initDB(TestVerifyAuthors.author_list_path, cls.db_path)
+        TestVerifyVoters.setUpClass()
+        manageDB.initDB(TestVerifyVoters.voter_list_path, cls.db_path)
 
     @classmethod
     def tearDownClass(cls):
-        TestVerifyAuthors.tearDownClass()
+        TestVerifyVoters.tearDownClass()
         shutil.rmtree(cls.db_path)
 
     def setUp(self):
-        """Create a temporary database filled from the dummy author list."""
+        """Create a temporary database filled from the dummy voter list."""
         manageDB.db.drop_all()
         manageDB.db.create_all()
-        manageDB.populateTables(TestVerifyAuthors.author_list_path)
+        manageDB.populateTables(TestVerifyVoters.voter_list_path)
 
     def tearDown(self):
         pass
@@ -68,7 +68,7 @@ class TestManageDB(unittest2.TestCase):
         self.assertFalse(os.path.isfile(votes_path))
         self.assertFalse(os.path.isfile(voters_path))
 
-        manageDB.initDB(TestVerifyAuthors.author_list_path, self.db_path)
+        manageDB.initDB(TestVerifyVoters.voter_list_path, self.db_path)
 
         # The two database files should now exist
         self.assertTrue(os.path.isfile(votes_path))
@@ -80,31 +80,31 @@ class TestManageDB(unittest2.TestCase):
         self.assertEqual(len(rows), 0)
         votes.close()
 
-        # The voters database should contain the authors
+        # The voters database should contain the voters
         voters = self.get_voters_db()
         rows = voters.execute('SELECT * FROM voters').fetchall()
-        self.assertEqual(len(rows), len(AUTHORS))
-        for row, author in zip(rows, AUTHORS):
+        self.assertEqual(len(rows), len(VOTERS))
+        for row, voter in zip(rows, VOTERS):
             # The names must match
-            self.assertEqual(row[0], author)
+            self.assertEqual(row[0], voter)
             # hasVoted must be zero
             self.assertEqual(row[1], 0)
         voters.close()
 
     # TODO manageDB.isInDB is poorly named as it checks hasVoted
     def test_is_in_db_valid(self):
-        """Should return hasVoted for authors that are in the DB."""
-        for author in AUTHORS:
+        """Should return hasVoted for voters that are in the DB."""
+        for voter in VOTERS:
             try:
-                manageDB.isInDB(author)
+                manageDB.isInDB(voter)
             except AttributeError:
-                self.fail('{0} is not in the database'.format(author))
+                self.fail('{0} is not in the database'.format(voter))
 
     def test_is_in_db_invalid(self):
-        """Should raise KeyError for authors not in the DB."""
-        for author in NOT_AUTHORS:
+        """Should raise KeyError for voters not in the DB."""
+        for voter in NOT_VOTERS:
             with self.assertRaises(KeyError):
-                manageDB.isInDB(author)
+                manageDB.isInDB(voter)
 
     def test_generate_secret_key(self):
         """Should generate correct length alphanumeric key."""
@@ -121,7 +121,7 @@ class TestManageDB(unittest2.TestCase):
         rows = votes.execute('SELECT * FROM votes').fetchall()
         self.assertEqual(len(rows), 0)
 
-        key = manageDB.addVote(AUTHORS[0], 'abc')
+        key = manageDB.addVote(VOTERS[0], 'abc')
 
         # Should be one vote now
         rows = votes.execute('SELECT * FROM votes').fetchall()
@@ -131,10 +131,10 @@ class TestManageDB(unittest2.TestCase):
         votes.close()
 
     def test_add_vote_already_voted(self):
-        """Should raise KeyError for an author that has already voted."""
-        key1 = manageDB.addVote(AUTHORS[0], 'abc')
+        """Should raise KeyError for an voter that has already voted."""
+        key1 = manageDB.addVote(VOTERS[0], 'abc')
         with self.assertRaises(KeyError):
-            manageDB.addVote(AUTHORS[0], 'abc')
+            manageDB.addVote(VOTERS[0], 'abc')
 
         # Should still only be one vote
         votes = self.get_votes_db()
@@ -151,9 +151,9 @@ class TestManageDB(unittest2.TestCase):
         self.assertEqual([], manageDB.getVotes())
         votes.close()
 
-        key0 = manageDB.addVote(AUTHORS[0], 'abc')
-        key1 = manageDB.addVote(AUTHORS[1], 'acb')
-        key2 = manageDB.addVote(AUTHORS[2], 'cab')
+        key0 = manageDB.addVote(VOTERS[0], 'abc')
+        key1 = manageDB.addVote(VOTERS[1], 'acb')
+        key2 = manageDB.addVote(VOTERS[2], 'cab')
 
         self.assertItemsEqual(
             [(key0, 'abc'), (key1, 'acb'), (key2, 'cab')],
@@ -167,8 +167,8 @@ class TestManageDB(unittest2.TestCase):
         self.assertEqual(len(rows), 0)
         votes.close()
 
-        manageDB.addVote(AUTHORS[0], 'abc')
-        manageDB.addVote(AUTHORS[1], 'acb')
-        manageDB.addVote(AUTHORS[2], 'cab')
+        manageDB.addVote(VOTERS[0], 'abc')
+        manageDB.addVote(VOTERS[1], 'acb')
+        manageDB.addVote(VOTERS[2], 'cab')
 
         self.assertItemsEqual(['abc', 'acb', 'cab'], manageDB.getPreferences())

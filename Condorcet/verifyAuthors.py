@@ -8,10 +8,6 @@ def default_authors_file():
     return os.path.join(app.config['DB_DIR'], getConfig('AUTHORS_LIST'))
 
 
-def default_admins_file():
-    return os.path.join(app.config['DB_DIR'], getConfig('ADMINS_LIST'))
-
-
 def listAuthors(authors_file=default_authors_file()):
     """Return the list of authors as full names.
 
