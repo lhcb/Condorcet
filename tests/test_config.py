@@ -14,7 +14,7 @@ REQUIRED_KEYS = [
     'START_ELECTION',
     'CLOSE_ELECTION',
     'VIEW_RESULTS',
-    'AUTHORS_LIST',
+    'VOTERS_LIST',
     'DEBUG',
     'APPLICATION_ROOT',
     'SECRET_KEY',
@@ -101,18 +101,16 @@ class TestConfig(unittest2.TestCase):
             time.struct_time
         )
 
-    def test_authors_list_validity(self):
-        """AUTHORS_LIST should point to a valid XML file."""
+    def test_voters_list_validity(self):
+        """VOTERS_LIST should point to a valid XML file."""
         self.assertTrue(
-            os.path.isfile(os.path.join(config.DB_DIR, config.AUTHORS_LIST))
+            os.path.isfile(os.path.join(config.DB_DIR, config.VOTERS_LIST))
             )
-        try:
-            xml.etree.ElementTree.parse(
-                os.path.join(config.DB_DIR, config.AUTHORS_LIST)
-                )
-        except xml.etree.ElementTree.ParseError:
-            self.fail('Could not parse XML at {0}'.format(
-                os.path.join(config.DB_DIR, config.AUTHORS_LIST)))
+        voters = [i.rstrip().split(',')[0]
+                  for i in open(os.path.join(config.DB_DIR, config.VOTERS_LIST)).readlines()[1:]]
+        for i in voters:
+            assert(len(i)==6 or len(i)==1)
+       
 
     def test_debug_validity(self):
         """DEBUG should be a boolean"""

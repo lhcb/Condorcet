@@ -75,13 +75,13 @@ Website where to download list of authors </a><br>
 
 
 <a href={{ url_for('download',
-filename=current_config['AUTHORS_LIST']) }} download> 
-Download current list of authors </a><br>
+filename=current_config['VOTERS_LIST']) }} download> 
+Download current list of voters </a><br>
 <br>
 
-<form action="{{ url_for('uploadAuthorsList'
+<form action="{{ url_for('uploadVotersList'
 ) }}" method="POST" enctype="multipart/form-data">
-Upload new list of authors: 
+Upload new list of voters: 
 <input
 type="file" name="filename"  size = 40>
 <input type="submit" value="Upload">

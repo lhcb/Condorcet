@@ -2,7 +2,7 @@
 
 TITLE is the title shown for the poll to the voter.
 OPTIONS are the available choices shown to the voter.
-AUTHORS_LIST is the name of the xml file with author lis
+VOTERS_LIST is the name of the csv file with voters' list
 """
 import os
 import sys
@@ -29,13 +29,13 @@ CLOSE_ELECTION = '28/03/2023 12.47'
 VIEW_RESULTS = '28/03/2008 12.24'
 
 
-# Name of the folder to contain the databases, authorlist and list admins
+# Name of the folder to contain the databases and voters' list
 DB_DIR = os.path.join(this_files_dir, 'databases')
 
 # xml file with author list, can be downloaded form:
 # https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php
 # write only the file name and place the file in the same folder DB_DIR
-AUTHORS_LIST = 'LHCb_Voters.xml'
+VOTERS_LIST = 'LHCb_voters.csv'
 
 ###############################################################################
 
