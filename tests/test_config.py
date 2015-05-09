@@ -109,7 +109,7 @@ class TestConfig(unittest2.TestCase):
         voters = [i.rstrip().split(',')[0]
                   for i in open(os.path.join(config.DB_DIR, config.VOTERS_LIST)).readlines()[1:]]
         for i in voters:
-            assert(len(i)==6)
+            assert(len(i)==6 or len(i)==1)
        
 
     def test_debug_validity(self):
