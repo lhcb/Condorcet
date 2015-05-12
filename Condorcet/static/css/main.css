@@ -113,6 +113,12 @@ height: 25px;
 font-size: 14px;
 }
 
+input.file_button {
+width: 50%;
+height: 25px;
+font-size: 14px;
+}
+
 input[type=submit]:hover {
   background: #0068b5;
   color: #f1fbff;
@@ -145,6 +151,23 @@ input[type="text"].focus,input[type="time"].focus, input[type="date"].focus {
   box-shadow: 0 0 5px 1px #969696;
 }
 
+/* input[type="button"] { */
+.button {
+  margin: 0 0 1em 0;
+  background: #0073bb;
+  border: none;
+  width: 30%;
+  height: 25px;
+  font-size: 14px;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+  color: #daf2fc;
+  text-align:center;
+  float: center;
+  }
+
+
 /* Draggable interface */
 .container {
   /* height: 280px; */
@@ -157,6 +180,11 @@ input[type="text"].focus,input[type="time"].focus, input[type="date"].focus {
   overflow: hidden;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+
+.center {
+  float: center;
+  text-align:center;
 }
 
 .block {

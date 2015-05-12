@@ -53,8 +53,8 @@
     <input type="submit" value="Set to now" formaction="{{
     url_for('setToNow',timeDate='VIEW_RESULTS') }}" method="POST" class=inline_button >
     <br>
-    <a href= {{url_for('result')}}> See results </a><br>
 
+    <div class="center" style="margin-top:20px;">
     <br>   
     <input type="submit" value="Update Configuration" class=admin_button style="float: center;">
     </form>
@@ -67,13 +67,16 @@
     <input type="submit" value="Reset to default" class=admin_button>
     </form>
     <br>
+    </div>
 
 </div>
-<a href= https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php> 
-Website where to download list of authors </a><br>
-<br>
+<!-- <a href= https://lhcbglance.web.cern.ch/lhcbglance/membership/authorlist.php>  -->
+<!-- Website where to download list of authors </a><br> -->
+<!-- <br> -->
 
 
+<div class="block adminblock" style="float: center">
+    <div class="boxtitle" style="padding-bottom: 15px; font-size: 20px;">Voter list</div>
 <a href={{ url_for('download',
 filename=current_config['VOTERS_LIST']) }} download> 
 Download current list of voters </a><br>
@@ -81,12 +84,17 @@ Download current list of voters </a><br>
 
 <form action="{{ url_for('uploadVotersList'
 ) }}" method="POST" enctype="multipart/form-data">
-Upload new list of voters: 
-<input
-type="file" name="filename"  size = 40>
-<input type="submit" value="Upload">
+<b>Upload new list of voters</b><br>
+<input type="file" name="filename"  class=file_button> <br>
+<input type="submit" value="Upload" class=admin_button>
 </form>
 <br>
+</div>
+
+<div class="block adminblock center">
+    <div class="boxtitle" style="padding-bottom: 15px; font-size: 20px;">Results</div>
+    <a href={{ url_for('result') }}><button class="button">See results</button></a><br>
+</div>
 
 {% endblock %}
 
