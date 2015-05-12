@@ -249,6 +249,12 @@ def notVoter():
 @admin_required
 def admin():
     current_config = getConfigDict()
+    if current_config['CLOSE_ELECTION'] > current_config['VIEW_RESULTS']:
+        flash(('The publish date is before the close election date'), 'error')  # noqa
+    if current_config['START_ELECTION'] > current_config['VIEW_RESULTS']:
+        flash(('The publish date is before the start election date'), 'error')  # noqa
+    if current_config['START_ELECTION'] > current_config['CLOSE_ELECTION']:
+        flash(('The start date is after the close election date'), 'error')  # noqa
     return render_template('admin.html',
                            current_config=current_config)
 
