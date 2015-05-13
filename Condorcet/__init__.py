@@ -154,6 +154,7 @@ def root():
         return render_template('alreadyVoted.html')
     try:
         session['candidates']
+        # So that I can check immediately if the candidates have changed  # noqa
         if sorted(session['candidates']) != sorted(getConfig('OPTIONS')):
             raise KeyError('Want to exit the try')
     except KeyError:
@@ -274,11 +275,6 @@ def updateConfiguration():
     for key in new_config:
         if new_config[key] != current_config[key]:
             if key in ['OPTIONS']:
-                # So that I can check immediately if the candidates have changed  # noqa
-                try:
-                    del session['candidates']
-                except KeyError:
-                    pass
                 flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
             setConfig(key, new_config[key])
     return redirect(url_for('admin'))
