@@ -15,6 +15,8 @@ if __name__ == '__main__':
                        action='store_true')
     parser.add_argument('-p', help='Print content of databases',
                         action='store_true')
+    parser.add_argument('--csv', help='Make csv file',
+                        nargs='?', const='votes.csv')
     args = parser.parse_args()
 
 import os
@@ -110,7 +112,8 @@ def initDB(voters_file=None, dbdir=app.config['DB_DIR']):
         raise IOError(
             'Database already there, use --reset option to recreate'
         )
-    db.create_all()
+    db.create_all(bind='votes')
+    db.create_all(bind='voters')
     populateTables(voters_file)
     os.chmod(os.path.join(dbdir, app.config['VOTES_DB']), 0666)
     os.chmod(os.path.join(dbdir, app.config['VOTERS_DB']), 0666)
@@ -148,6 +151,7 @@ def readDB():
         str(voter) for voter in Voters.query.all() if voter.hasVoted
     ])
     print 'Votes:  ' + str(Votes.query.all())
+    print 'Number of votes: ' + str(len(Votes.query.all()))
 
 
 def getVotes():
@@ -205,3 +209,5 @@ if __name__ == '__main__':
         initDB(default_voters_file())
     if args.p:
         readDB()
+    if args.csv:
+        makeCSV(args.csv)
