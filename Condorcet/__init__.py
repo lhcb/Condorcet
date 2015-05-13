@@ -154,6 +154,8 @@ def root():
         return render_template('alreadyVoted.html')
     try:
         session['candidates']
+        if sorted(session['candidates']) != getConfig('OPTIONS'):
+            raise KeyError('Want to exit the try')
     except KeyError:
         choices_copy = getConfig('OPTIONS')[:]
         random.shuffle(choices_copy)
