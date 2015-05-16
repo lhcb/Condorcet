@@ -154,6 +154,14 @@ def readDB():
     print 'Number of votes: ' + str(len(Votes.query.all()))
 
 
+def getVote(secret_key):
+    '''return vote given secret key'''
+    try:
+        return Votes.query.filter_by(secret_key=secret_key).first().vote
+    except :
+        return None
+
+
 def getVotes():
     '''List of (secret_key, vote)'''
     return [(i.secret_key, i.vote) for i in Votes.query.all()]
