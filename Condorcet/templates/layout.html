@@ -24,7 +24,7 @@
     <div class="footer cf">
       <ul class="right">
         {% if session.user.admin %}
-        <li><a href="admin">Admin</a></li>
+        <li><a href="{{url_for('admin')}}">Admin</a></li>
         {% endif %}
         <!-- <li><a href="#">Help</a></li> -->
         <li><a href="{{ contact_url() }}">Contact</a></li>
