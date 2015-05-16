@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% from '_helpers.html' import list_as_fragment %}
+{% block body %}
+  <h1>View Vote</h1>
+
+  {% if choices %}
+   <p>The vote associated to the secret key <span class="important">{{secret_key}}</span> is: </p>
+   <table>
+     <thead>
+       <tr>
+         {% for _ in range(numCandidates) %}
+         <th>Choice #{{ loop.index }} </th>
+         {% endfor %}
+      </tr>
+    </thead>    
+    <tr>
+      {% for el in choices %}
+      <td>{{ '<br/>'.join(el.split(' ')) | safe }}</td>
+      {% endfor %}
+    </tr>
+  </table>
+    
+  {% else %}
+  
+    <p>Secret key <span class="important">{{secret_key}}</span> not found in the
+    database of votes.</p>
+  
+  {% endif %}
+
+{% endblock %}
