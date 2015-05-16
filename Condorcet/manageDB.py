@@ -158,7 +158,7 @@ def getVote(secret_key):
     '''return vote given secret key'''
     try:
         return Votes.query.filter_by(secret_key=secret_key).first().vote
-    except :
+    except AttributeError:
         return None
 
 

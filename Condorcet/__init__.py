@@ -337,5 +337,15 @@ def uploadVotersList():
     return redirect(url_for('admin'))
 
 
+@app.route('/retrieveVote/<secret_key>')
+def retrieveVote(secret_key):
+    vote = manageDB.getVote(secret_key)
+    choices = [] if vote is None else getListChoice(vote)
+    return render_template('seeVote.html',
+                           secret_key=secret_key,
+                           choices=choices,
+                           numCandidates=len(choices))
+
+
 if __name__ == '__main__':
     app.run(debug=app.config['DEBUG'])
