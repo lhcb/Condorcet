@@ -146,8 +146,8 @@ def publish_results(f):
 
 
 @app.route('/')
-@during_elections
 @voter_required
+@during_elections
 def root():
     cernid = session['user']['cernid']
     if manageDB.isInDB(cernid):
@@ -167,8 +167,8 @@ def root():
 
 
 @app.route('/poll', methods=['POST'])
-@during_elections
 @voter_required
+@during_elections
 def confirmVote():
     order = []
     choices = getConfig('OPTIONS')
@@ -194,8 +194,8 @@ def confirmVote():
 
 
 @app.route('/saveVote')
-@during_elections
 @voter_required
+@during_elections
 def savePoll():
     if not session.get('vote'):
         return redirect(url_for('root'))
