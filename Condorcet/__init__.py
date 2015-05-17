@@ -103,7 +103,7 @@ def during_elections(f):
             return render_template('notCorrectDate.html',
                                    title='Too early to vote',
                                    message=message,
-                                   printResultsLink=False)
+                                   )
         if time.localtime() > getConfig('CLOSE_ELECTION'):
             # TODO factor out long string to view
             close = time.strftime(
@@ -114,7 +114,7 @@ def during_elections(f):
             return render_template('notCorrectDate.html',
                                    title='Too late to vote',
                                    message=message,
-                                   printResultsLink=True)
+                                   )
         return f(*args, **kwargs)
     return decorated_function
 
@@ -146,14 +146,17 @@ def publish_results(f):
 
 
 @app.route('/')
-@during_elections
 @voter_required
+@during_elections
 def root():
     cernid = session['user']['cernid']
     if manageDB.isInDB(cernid):
         return render_template('alreadyVoted.html')
     try:
         session['candidates']
+        # So that I can check immediately if the candidates have changed  # noqa
+        if sorted(session['candidates']) != sorted(getConfig('OPTIONS')):
+            raise KeyError('Want to exit the try')
     except KeyError:
         choices_copy = getConfig('OPTIONS')[:]
         random.shuffle(choices_copy)
@@ -164,8 +167,8 @@ def root():
 
 
 @app.route('/poll', methods=['POST'])
-@during_elections
 @voter_required
+@during_elections
 def confirmVote():
     order = []
     choices = getConfig('OPTIONS')
@@ -191,8 +194,8 @@ def confirmVote():
 
 
 @app.route('/saveVote')
-@during_elections
 @voter_required
+@during_elections
 def savePoll():
     if not session.get('vote'):
         return redirect(url_for('root'))
@@ -272,11 +275,6 @@ def updateConfiguration():
     for key in new_config:
         if new_config[key] != current_config[key]:
             if key in ['OPTIONS']:
-                # So that I can check immediately if the candidates have changed  # noqa
-                try:
-                    del session['candidates']
-                except KeyError:
-                    pass
                 flash(('You changed the candidates so you probably want to reset the databases'), 'error')  # noqa
             setConfig(key, new_config[key])
     return redirect(url_for('admin'))
@@ -337,6 +335,16 @@ def uploadVotersList():
         flash(('New list of voters correcly uploaded'), 'success')
         flash(('You changed the list of voters so you probably want to reset the databases'), 'error')  # noqa
     return redirect(url_for('admin'))
+
+
+@app.route('/retrieveVote/<secret_key>')
+def retrieveVote(secret_key):
+    vote = manageDB.getVote(secret_key)
+    choices = [] if vote is None else getListChoice(vote)
+    return render_template('seeVote.html',
+                           secret_key=secret_key,
+                           choices=choices,
+                           numCandidates=len(choices))
 
 
 if __name__ == '__main__':

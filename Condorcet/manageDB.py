@@ -114,9 +114,9 @@ def initDB(voters_file=None, dbdir=app.config['DB_DIR']):
         )
     db.create_all(bind='votes')
     db.create_all(bind='voters')
-    populateTables(voters_file)
     os.chmod(os.path.join(dbdir, app.config['VOTES_DB']), 0666)
     os.chmod(os.path.join(dbdir, app.config['VOTERS_DB']), 0666)
+    populateTables(voters_file)
 
 
 def isInDB(cernid):
@@ -154,6 +154,14 @@ def readDB():
     print 'Number of votes: ' + str(len(Votes.query.all()))
 
 
+def getVote(secret_key):
+    '''return vote given secret key'''
+    try:
+        return Votes.query.filter_by(secret_key=secret_key).first().vote
+    except AttributeError:
+        return None
+
+
 def getVotes():
     '''List of (secret_key, vote)'''
     return [(i.secret_key, i.vote) for i in Votes.query.all()]
@@ -189,6 +197,7 @@ def rmDB(dbdir=app.config['DB_DIR']):
                               app.config['VOTES_DB'])
     voters_file = os.path.join(dbdir,
                                app.config['VOTERS_DB'])
+    db.session.remove()
     for db_file in [votes_file, voters_file]:
         if os.path.exists(db_file):
             os.remove(db_file)
