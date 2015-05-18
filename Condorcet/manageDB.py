@@ -91,13 +91,20 @@ def updateVoters(voters_file):
     """
     Add to the voters' database voters that are present
     in the voters_file but were not in the database
-    leave unchanged the other voters.
+    removes voters not present in the new voter list which have not yet voted
+    if someone has already voted and is not eligible any more keep
+    him in the db as his vote cannot be removed
     """
-    for cernid in listVoters(voters_file):
+    voters_list = listVoters(voters_file)
+    for cernid in voters_list:
         newVoter = Voters(cernid)
         if Voters.query.filter_by(cernid=cernid).all():
             continue
         db.session.add(newVoter)
+    voters_db = [voter.cernid for voter in Voters.query.all()]
+    for cernid in set(voters_db) - set(voters_list):
+        if not Voters.query.filter_by(cernid=cernid).first().hasVoted:
+            Voters.query.filter_by(cernid=cernid).delete()
     db.session.commit()
 
 
