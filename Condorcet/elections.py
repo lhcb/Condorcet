@@ -8,6 +8,7 @@ is last.
 candidates is the list of possible candidates such as ['a', 'b', 'c'].
 """
 
+log_dictionary = []
 
 # Borda Method
 
@@ -21,6 +22,7 @@ def getBordaScore(preferences, candidates):
     for pref in preferences:
         for i, cand in enumerate(pref):
             score[cand] += num_candidates - 1 - i
+    log_dictionary.append(score)
     return score
 
 
@@ -100,6 +102,7 @@ def getShulzeScore(SPS):
                 if SPS[i][j] > SPS[j][i]:
                     score[i] += 1
 
+    log_dictionary.append(score)
     return score
 
 
@@ -135,6 +138,8 @@ def getLoosers(preferences, candidates):
     for pref in preferences:
         for i, cand in enumerate(pref):
             num_preferences[cand][i] += 1
+
+    log_dictionary.append(num_preferences)
 
     preferences_loosers = dict(
         (key, value) for key, value in num_preferences.items()
@@ -222,6 +227,26 @@ if __name__ == '__main__':
                                      in enumerate(alphabet)
                                      if cont < len(candidates)])
             ))
+
+        log_dictionary = [dict(
+            [(getListChoice(key)[0], val) for key, val in i.items()]
+            ) for i in log_dictionary]
+
+        if args.method == 'LHCb':
+            print 'Preferences table:'
+            for cont, pref in enumerate(log_dictionary, 1):
+                print ('Iter', cont, ':',
+                       sorted(pref.items(), key=lambda x: x[-1], reverse=True))
+
+        if args.method == 'Borda':
+            print ('Borda score:',
+                   sorted(log_dictionary[0].items(),
+                          key=lambda x: x[1], reverse=True))
+
+        if args.method == 'Shulze':
+            print ('Shulze score:',
+                   sorted(log_dictionary[0].items(),
+                          key=lambda x: x[1], reverse=True))
 
         print winners
 
