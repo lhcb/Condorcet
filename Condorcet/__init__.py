@@ -243,7 +243,8 @@ def getCSV():
 @publish_results
 def getElectionLog():
     manageDB.makeCSV(os.path.join(app.config['DB_DIR'], 'votes.csv'))
-    os.system('./Condorcet/elections.py {0}>> {1}'.format(
+    os.system('{0} {1} > {2}'.format(
+        os.path.join(this_files_dir, 'elections.py'),
         os.path.join(app.config['DB_DIR'], 'votes.csv'),
         os.path.join(app.config['DB_DIR'], 'election.log')))
     return send_from_directory(directory=app.config['DB_DIR'],
