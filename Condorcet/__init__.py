@@ -239,6 +239,17 @@ def getCSV():
                                filename='votes.csv')
 
 
+@app.route('/election.log', methods=['GET', 'POST'])
+@publish_results
+def getElectionLog():
+    manageDB.makeCSV(os.path.join(app.config['DB_DIR'], 'votes.csv'))
+    os.system('./Condorcet/elections.py {0}>> {1}'.format(
+        os.path.join(app.config['DB_DIR'], 'votes.csv'),
+        os.path.join(app.config['DB_DIR'], 'election.log')))
+    return send_from_directory(directory=app.config['DB_DIR'],
+                               filename='election.log')
+
+
 @app.route('/unauthorised')
 def notVoter():
     # Voters shouldn't see this page
