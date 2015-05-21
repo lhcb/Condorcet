@@ -248,7 +248,10 @@ if __name__ == '__main__':
                    sorted(log_dictionary[0].items(),
                           key=lambda x: x[1], reverse=True))
 
-        print winners
+        if len(winners) == 1:
+            print 'The winner is', winners[0]
+        else:
+            print 'There was a drawn, the winners are', winners
 
     except IndexError:
         print 'csv file empty'
