@@ -11,8 +11,8 @@ def listVoters(voters_file=default_voters_file()):
     """
     Return the list of cernid of voters
     """
-    voters = [i.rstrip().split(',')[0]
-              for i in open(voters_file).readlines()[1:]]
+    voters = [i.rstrip().replace('\xef\xbb\xbf','').split(';')[0]
+              for i in open(voters_file).readlines()[:] if i[0] != '#']
     return voters
 
 
