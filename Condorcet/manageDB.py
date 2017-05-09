@@ -23,6 +23,7 @@ import os
 import sys
 import random
 import string
+import io
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))  # noqa
 
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -184,14 +185,14 @@ def makeCSV(outFile_name):
     '''
     Return list of [ secret_key, candidate1, candidate2, ..., candidateN ]
     '''
-    with open(outFile_name, 'w') as outFile:
-        outFile.write('Secret key,')
+    with io.open(outFile_name, 'w',encoding='utf8') as outFile:
+        outFile.write(u'Secret key,')
         for i in range(1, len(getConfig('OPTIONS'))+1):
-            outFile.write('Choice #{0},'.format(i))
-        outFile.write('\n')
+            outFile.write(u'Choice #{0},'.format(i))
+        outFile.write(u'\n')
         for vote in [[i.secret_key] + Condorcet.getListChoice(i.vote)
                      for i in Votes.query.all()]:
-            outFile.write(','.join(vote)+'\n')
+            outFile.write(u','.join(vote)+u'\n')
 
 
 def getPreferences():
