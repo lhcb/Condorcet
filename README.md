@@ -2,6 +2,8 @@
 
 Condorcet is a web application for voting.
 
+⚠️ **Note** ⚠️ This repository is archived. It has been superseeded by the [new implementation hosted on CERN's GitLab instance](https://gitlab.cern.ch/lhcb/condorcet).
+
 Set up
 ---
 
